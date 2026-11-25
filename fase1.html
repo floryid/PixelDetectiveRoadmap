@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fase 1 — Fondasi Wajib | Pixel Detective Academy</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="page-phase">
+
+  <nav class="toc">
+    <div class="toc-inner">
+      <span class="toc-title">// FASE 1</span>
+      <a href="index.html">🏠 Home</a>
+      <a href="fase1.html" class="active">1</a>
+      <a href="fase2.html">2</a>
+      <a href="fase3.html">3</a>
+      <a href="fase4.html">4</a>
+      <a href="fase5.html">5</a>
+      <a href="fase6.html">6</a>
+      <button id="printBtn" class="btn-print">🖨️ PDF</button>
+    </div>
+    <div class="progress-bar" id="progressBar"></div>
+  </nav>
+
+  <main class="container">
+
+    <header class="phase-hero reveal">
+      <div class="phase-num-big">01</div>
+      <div class="badge">FASE 1 • FONDASI WAJIB</div>
+      <h1>Fondasi Wajib</h1>
+      <p class="tagline">"Sebelum jadi detektif, kamu harus paham medan yang kamu selidiki."</p>
+      <p class="phase-duration">⏱️ 1–2 Bulan • 🎯 Target: Linux tanpa GUI + script port scanner</p>
+      <button class="mark-done-btn" data-phase="1">✓ Tandai Fase Ini Selesai</button>
+    </header>
+
+    <section class="reveal">
+      <h2>🎯 Mengapa Fase Ini Krusial?</h2>
+      <p>
+        Banyak pemula langsung lompat ke "hacking tools" seperti Metasploit atau Burp Suite.
+        Hasilnya? Mereka hanya bisa <em>copy-paste</em> tanpa paham apa yang terjadi. Ketika
+        target berbeda sedikit, mereka bingung. <strong>Detektif sejati memahami medan sebelum
+        bergerak.</strong>
+      </p>
+      <div class="callout">
+        <strong>Prinsip:</strong> Tools berubah setiap tahun. Fondasi (networking, OS, scripting)
+        bertahan sepanjang karier. Investasi di sini adalah investasi terbaik.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>📖 1.1 Networking — Bahasa Sistem</h2>
+      <p class="section-sub">Tanpa paham networking, kamu tidak akan paham apa yang sebenarnya kamu eksploitasi.</p>
+
+      <h3>Step-by-Step:</h3>
+      <ol class="steps-list">
+        <li><strong>Pahami Model OSI & TCP/IP</strong> — 7 layer OSI, 4 layer TCP/IP. Fokus: Layer 3 (Network), Layer 4 (Transport), Layer 7 (Application).</li>
+        <li><strong>Kuasai TCP vs UDP</strong> — TCP handshake (SYN, SYN-ACK, ACK), UDP connectionless. Ini dasar port scanning.</li>
+        <li><strong>Pahami DNS</strong> — A record, CNAME, MX, TXT, NS. Subdomain enumeration bergantung pada ini.</li>
+        <li><strong>Pahami HTTP/HTTPS</strong> — Request method (GET, POST, PUT, DELETE), status code (200, 301, 403, 404, 500), header, cookie, session.</li>
+        <li><strong>Subnetting & Routing</strong> — CIDR notation (/24, /16), gateway, NAT. Penting untuk network pentest.</li>
+        <li><strong>Proxy & VPN</strong> — Paham cara traffic di-route, penting untuk anonymization & pivoting.</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: Analisis TCP Handshake dengan Python</h4>
+        <pre><code>import socket
+
+def tcp_handshake(target, port):
+    """Simulasi TCP 3-way handshake manual."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(2)
+
+    print(f"[*] Mencoba handshake ke {target}:{port}")
+    try:
+        # connect_ex mengembalikan 0 jika sukses (SYN → SYN-ACK → ACK)
+        result = s.connect_ex((target, port))
+        if result == 0:
+            print(f"[+] Port {port} OPEN — handshake berhasil")
+            # Kirim HTTP request sederhana untuk lihat banner
+            s.send(b"HEAD / HTTP/1.1\r\nHost: " + target.encode() + b"\r\n\r\n")
+            banner = s.recv(1024).decode(errors='ignore')
+            print(f"[+] Banner:\n{banner[:200]}")
+        else:
+            print(f"[-] Port {port} closed/filtered (kode: {result})")
+    except socket.timeout:
+        print(f"[!] Timeout — port {port} mungkin filtered oleh firewall")
+    finally:
+        s.close()
+
+# Uji ke scanme.nmap.org (legal untuk latihan)
+tcp_handshake("scanme.nmap.org", 80)
+tcp_handshake("scanme.nmap.org", 22)</code></pre>
+        <p class="code-note">
+          <strong>Penjelasan:</strong> <code>connect_ex()</code> melakukan handshake TCP di balik layar.
+          Kode 0 = sukses, 111 = connection refused (port closed), timeout = filtered.
+          Ini adalah fondasi cara kerja Nmap.
+        </p>
+      </div>
+
+      <div class="target-box">
+        <strong>🎯 Target 1.1:</strong> Bisa menjelaskan alur request HTTP dari browser ke server
+        (DNS → TCP handshake → HTTP request → response) tanpa melihat catatan.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>🐧 1.2 Linux & Terminal — Senjata Detektif</h2>
+      <p class="section-sub">90% tools offensive berjalan di Linux. Kamu harus nyaman tanpa GUI.</p>
+
+      <h3>Step-by-Step:</h3>
+      <ol class="steps-list">
+        <li><strong>Install Linux</strong> — VM (VirtualBox/VMware) dengan Kali Linux atau Parrot OS. Alternatif: WSL2 di Windows.</li>
+        <li><strong>File System Hierarchy</strong> — /etc (config), /var (log), /tmp (sementara), /home (user), /root (admin), /usr/bin (executable).</li>
+        <li><strong>Permission & Ownership</strong> — <code>chmod</code> (rwx, numeric 755), <code>chown</code>, <code>umask</code>. Paham SUID/SGID — kunci privilege escalation.</li>
+        <li><strong>Process Management</strong> — <code>ps</code>, <code>top</code>, <code>htop</code>, <code>kill</code>, <code>jobs</code>, <code>bg</code>/<code>fg</code>, <code>nohup</code>.</li>
+        <li><strong>Text Processing</strong> — <code>grep</code>, <code>awk</code>, <code>sed</code>, <code>cut</code>, <code>sort</code>, <code>uniq</code>, <code>jq</code> (JSON). Wajib untuk parsing output tool.</li>
+        <li><strong>Networking Commands</strong> — <code>ifconfig</code>/<code>ip</code>, <code>netstat</code>/<code>ss</code>, <code>curl</code>, <code>wget</code>, <code>nc</code> (netcat), <code>tcpdump</code>.</li>
+        <li><strong>Bash Scripting</strong> — variabel, loop, condition, function, argument parsing. Ini fondasi automation.</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: Bash Script — Log Analyzer Detektif</h4>
+        <pre><code>#!/bin/bash
+# log-detective.sh — Analisis auth.log untuk deteksi brute force
+# Usage: ./log-detective.sh /var/log/auth.log
+
+LOG_FILE="${1:-/var/log/auth.log}"
+
+if [[ ! -f "$LOG_FILE" ]]; then
+    echo "[!] File tidak ditemukan: $LOG_FILE"
+    exit 1
+fi
+
+echo "=========================================="
+echo "  PIXEL DETECTIVE — Log Analyzer"
+echo "  Target: $LOG_FILE"
+echo "=========================================="
+
+# 1. Hitung total failed login
+TOTAL_FAILED=$(grep -c "Failed password" "$LOG_FILE")
+echo "[*] Total failed login: $TOTAL_FAILED"
+
+# 2. Top 10 IP dengan failed login terbanyak
+echo -e "\n[*] Top 10 IP penyerang:"
+grep "Failed password" "$LOG_FILE" \
+  | awk '{print $(NF-3)}' \
+  | sort | uniq -c | sort -rn \
+  | head -10
+
+# 3. Deteksi brute force (>= 5 attempt dari IP yang sama)
+echo -e "\n[!] IP dengan >= 5 failed attempt (potensi brute force):"
+grep "Failed password" "$LOG_FILE" \
+  | awk '{print $(NF-3)}' \
+  | sort | uniq -c \
+  | awk '$1 >= 5 {print "  - " $2 " (" $1 " attempts)"}'
+
+# 4. User yang paling sering dicoba
+echo -e "\n[*] User yang paling sering dicoba:"
+grep "Failed password" "$LOG_FILE" \
+  | awk '{print $(NF-5)}' \
+  | sort | uniq -c | sort -rn | head -5
+
+# 5. Login sukses setelah failed (potensi compromise)
+echo -e "\n[!] Login sukses (periksa apakah mencurigakan):"
+grep "Accepted password" "$LOG_FILE" | tail -5
+
+echo -e "\n[✓] Analisis selesai."</code></pre>
+        <p class="code-note">
+          <strong>Penjelasan:</strong> Script ini menggunakan <code>grep</code> + <code>awk</code> +
+          <code>sort</code> + <code>uniq</code> — kombinasi text processing klasik Linux.
+          <code>$(NF-3)</code> mengambil kolom IP dari format log SSH. Ini adalah skill yang
+          akan kamu pakai terus saat analisis log di pentest.
+        </p>
+      </div>
+
+      <div class="target-box">
+        <strong>🎯 Target 1.2:</strong> Bisa navigasi Linux tanpa GUI, menulis bash script
+        untuk automasi sederhana, dan paham SUID/SGID untuk privilege escalation.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>🐍 1.3 Python — Bahasa Universal Detektif</h2>
+      <p class="section-sub">Python adalah bahasa #1 untuk tooling offensive. Wajib kuasai dasar-dasarnya.</p>
+
+      <h3>Step-by-Step:</h3>
+      <ol class="steps-list">
+        <li><strong>Sintaks Dasar</strong> — variabel, tipe data (int, str, list, dict, tuple, set), operator, control flow (if/elif/else, for, while).</li>
+        <li><strong>Function & Module</strong> — <code>def</code>, parameter, return, import module, <code>if __name__ == "__main__"</code>.</li>
+        <li><strong>File I/O</strong> — <code>open()</code>, <code>read()</code>, <code>write()</code>, <code>with</code> statement. Penting untuk baca wordlist, log, config.</li>
+        <li><strong>Library Penting</strong> — <code>socket</code> (networking), <code>requests</code> (HTTP), <code>re</code> (regex), <code>subprocess</code> (jalankan command), <code>argparse</code> (CLI), <code>threading</code> (concurrency).</li>
+        <li><strong>Error Handling</strong> — <code>try/except/finally</code>. Tool offensive harus tahan error.</li>
+        <li><strong>Virtual Environment</strong> — <code>venv</code>, <code>pip</code>, <code>requirements.txt</code>. Isolasi dependency per proyek.</li>
+      </ol>
+
+      <div class="example-box">
+        <h4>💡 Contoh Kompleks: Multi-threaded Port Scanner</h4>
+        <pre><code>#!/usr/bin/env python3
+"""
+pixel-scan.py — Multi-threaded port scanner ala Pixel Detective
+Usage: python3 pixel-scan.py <target> <start_port> <end_port>
+"""
+
+import socket
+import argparse
+import threading
+from queue import Queue
+from datetime import datetime
+
+# Lock untuk print yang rapi antar thread
+print_lock = threading.Lock()
+open_ports = []
+
+def scan_port(target, port, timeout=1):
+    """Scan satu port. Return (port, banner) jika open."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(timeout)
+        result = s.connect_ex((target, port))
+        if result == 0:
+            # Coba ambil banner (service fingerprinting)
+            banner = ""
+            try:
+                s.send(b"HEAD / HTTP/1.0\r\n\r\n")
+                banner = s.recv(1024).decode(errors='ignore').strip()[:80]
+            except Exception:
+                pass
+            s.close()
+            return (port, banner)
+        s.close()
+    except Exception:
+        pass
+    return None
+
+def worker(target, queue):
+    """Thread worker: ambil port dari queue, scan, simpan hasil."""
+    while not queue.empty():
+        port = queue.get()
+        result = scan_port(target, port)
+        if result:
+            port_num, banner = result
+            with print_lock:
+                open_ports.append(port_num)
+                banner_info = f" | {banner}" if banner else ""
+                print(f"[+] Port {port_num:5d} OPEN{banner_info}")
+        queue.task_done()
+
+def main():
+    parser = argparse.ArgumentParser(description="Pixel Detective Port Scanner")
+    parser.add_argument("target", help="IP atau hostname target")
+    parser.add_argument("start_port", type=int, help="Port awal")
+    parser.add_argument("end_port", type=int, help="Port akhir")
+    parser.add_argument("-t", "--threads", type=int, default=100,
+                        help="Jumlah thread (default: 100)")
+    args = parser.parse_args()
+
+    # Resolve hostname ke IP
+    try:
+        target_ip = socket.gethostbyname(args.target)
+    except socket.gaierror:
+        print(f"[!] Tidak bisa resolve hostname: {args.target}")
+        return
+
+    print("=" * 50)
+    print(f"  PIXEL DETECTIVE — Port Scanner")
+    print(f"  Target  : {args.target} ({target_ip})")
+    print(f"  Range   : {args.start_port}-{args.end_port}")
+    print(f"  Threads : {args.threads}")
+    print(f"  Waktu   : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 50)
+
+    # Isi queue dengan port
+    queue = Queue()
+    for port in range(args.start_port, args.end_port + 1):
+        queue.put(port)
+
+    # Spawn threads
+    threads = []
+    start_time = datetime.now()
+    for _ in range(args.threads):
+        t = threading.Thread(target=worker, args=(target_ip, queue))
+        t.daemon = True
+        t.start()
+        threads.append(t)
+
+    # Tunggu semua selesai
+    queue.join()
+
+    elapsed = (datetime.now() - start_time).total_seconds()
+    print("=" * 50)
+    print(f"[✓] Selesai dalam {elapsed:.2f} detik")
+    print(f"[✓] Ditemukan {len(open_ports)} port terbuka: {sorted(open_ports)}")
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <p class="code-note">
+          <strong>Penjelasan:</strong> Script ini mendemonstrasikan:
+          <br>• <code>socket</code> untuk koneksi TCP
+          <br>• <code>threading</code> + <code>Queue</code> untuk concurrency (100x lebih cepat dari sequential)
+          <br>• <code>argparse</code> untuk CLI yang proper
+          <br>• <code>print_lock</code> untuk menghindari output berantakan antar thread
+          <br>• Banner grabbing sederhana untuk fingerprinting service
+        </p>
+      </div>
+
+      <div class="target-box">
+        <strong>🎯 Target 1.3:</strong> Bisa menulis script Python yang menerima argumen CLI,
+        melakukan koneksi network, dan menangani error dengan baik.
+      </div>
+    </section>
+
+    <section class="reveal">
+      <h2>✅ Checklist Fase 1</h2>
+      <div class="checklist">
+        <label><input type="checkbox" data-check="1-1"> Paham model OSI & TCP/IP</label>
+        <label><input type="checkbox" data-check="1-2"> Bisa jelaskan TCP handshake tanpa catatan</label>
+        <label><input type="checkbox" data-check="1-3"> Paham DNS record types (A, CNAME, MX, TXT)</label>
+        <label><input type="checkbox" data-check="1-4"> Nyaman navigasi Linux tanpa GUI</label>
+        <label><input type="checkbox" data-check="1-5"> Paham chmod, chown, SUID/SGID</label>
+        <label><input type="checkbox" data-check="1-6"> Bisa pakai grep, awk, sed untuk parsing log</label>
+        <label><input type="checkbox" data-check="1-7"> Menulis bash script automasi sederhana</label>
+        <label><input type="checkbox" data-check="1-8"> Menulis Python script dengan socket + argparse</label>
+        <label><input type="checkbox" data-check="1-9"> Menyelesaikan OverTheWire: Bandit (level 0–20)</label>
+        <label><input type="checkbox" data-check="1-10"> Menyelesaikan TryHackMe: Linux Fundamentals</label>
+      </div>
+    </section>
+
+    <nav class="phase-nav">
+      <a href="index.html" class="phase-nav-prev">← Kembali ke Home</a>
+      <a href="fase2.html" class="phase-nav-next">Fase 2: Offensive Fundamentals →</a>
+    </nav>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>PIXEL DETECTIVE ACADEMY</strong> — Fase 1</p>
+    <p class="footer-tagline">"Zoom in. Find the flaw. Own the pixel."</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
